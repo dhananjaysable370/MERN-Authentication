@@ -93,3 +93,228 @@ export const PASSWORD_RESET_REQUEST_TEMPLATE = `
 </body>
 </html>
 `;
+
+export const WELCOME_EMAIL_TEMPLATE = `
+  <!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Our Platform</title>
+    <style type="text/css">
+        /* Base styles and reset */
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333333;
+            background-color: #f5f5f5;
+        }
+
+        /* Wrapper to prevent margin issues */
+        .wrapper {
+            width: 100%;
+            table-layout: fixed;
+            background-color: #f5f5f5;
+            padding-bottom: 60px;
+        }
+
+        /* Main container of the email */
+        .main {
+            background-color: #ffffff;
+            margin: 0 auto;
+            width: 100%;
+            max-width: 600px;
+            border-spacing: 0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Header */
+        .header {
+            padding: 25px 30px;
+            text-align: center;
+            background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+            color: white;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        /* Content sections */
+        .content {
+            padding: 20px 30px 10px 30px;
+        }
+
+        .hero {
+            background-color: #f8fafc;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            color: #4338ca;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .hero p {
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        /* Button */
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #6366F1;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            margin: 10px 0;
+            transition: background-color 0.3s;
+        }
+
+        .button:hover {
+            background-color: #4F46E5;
+        }
+
+        /* Features section */
+        .features {
+            display: table;
+            width: 100%;
+            margin: 25px 0;
+        }
+
+        .feature {
+            display: table-cell;
+            width: 33.33%;
+            padding: 15px;
+            text-align: center;
+            vertical-align: top;
+        }
+
+        .feature-icon {
+            font-size: 30px;
+            margin-bottom: 10px;
+            color: #6366F1;
+        }
+
+        .feature h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #4338ca;
+            font-size: 16px;
+        }
+
+        .feature p {
+            margin: 0;
+            font-size: 14px;
+        }
+
+        /* Divider */
+        .divider {
+            height: 1px;
+            background-color: #e5e7eb;
+            margin: 25px 0;
+        }
+
+        /* Footer */
+        .footer {
+            padding: 20px 30px;
+            text-align: center;
+            background-color: #f8fafc;
+            color: #6b7280;
+            font-size: 12px;
+        }
+
+        .social {
+            margin: 15px 0;
+        }
+
+        .social a {
+            display: inline-block;
+            margin: 0 8px;
+            color: #6366F1;
+            text-decoration: none;
+        }
+
+        /* Responsive adjustments */
+        @media screen and (max-width: 600px) {
+            .main {
+                width: 95%;
+            }
+
+            .features, .feature {
+                display: block;
+                width: 100%;
+            }
+
+            .feature {
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <table class="main" width="100%">
+            <!-- HEADER -->
+            <tr>
+                <td class="header">
+                    <div class="logo">COMPANY</div>
+                </td>
+            </tr>
+
+            <!-- CONTENT -->
+            <tr>
+                <td class="content">
+                    <div class="hero">
+                        <h1>Welcome to Our Platform!</h1>
+                        <p>Thank you for verifying your email address. We're excited to have you join our community.</p>
+                        <a href="#" class="button">Get Started</a>
+                    </div>
+
+                    <p>Hello [Customer Name],</p>
+                    <p>Your account has been successfully created and is ready to use. We're thrilled to have you on board!</p>
+
+                    <div class="divider"></div>
+
+                    <p>If you have any questions or need assistance, our support team is here to help. Just reply to this email or contact us through our support portal.</p>
+
+                    <p>Best regards,<br>The MERN-Auth Team</p>
+                </td>
+            </tr>
+
+            <!-- FOOTER -->
+            <tr>
+                <td class="footer">
+                    <div class="social">
+                        <a href="#">Twitter</a>
+                        <a href="#">Facebook</a>
+                        <a href="#">Instagram</a>
+                        <a href="#">LinkedIn</a>
+                    </div>
+
+                    <p>© 2025 MERN-Auth. All rights reserved.</p>
+                    <p>Amravati, Maharashtra, India.</p>
+                    <p>
+                        <a href="#" style="color: #6366F1;">Unsubscribe</a> |
+                        <a href="#" style="color: #6366F1;">Privacy Policy</a> |
+                        <a href="#" style="color: #6366F1;">View Online</a>
+                    </p>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>
+`

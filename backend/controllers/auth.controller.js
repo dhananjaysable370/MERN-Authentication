@@ -2,7 +2,8 @@ import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs';
 import transporter from '../mailtrap/nodemailer.js';
 import { User } from "../models/auth.model.js";
-import { VERIFICATION_EMAIL_TEMPLATE } from '../mailtrap/emailTemplates.js';
+import { VERIFICATION_EMAIL_TEMPLATE, WELCOME_EMAIL_TEMPLATE } from '../mailtrap/emailTemplates.js';
+import { text } from 'express';
 
 export const register = async (req, res) => {
     try {
@@ -82,6 +83,60 @@ export const register = async (req, res) => {
         });
     }
 };
+
+
+export const verifyEmail = async (req, res) => {
+    try {
+        const { email, otp } = req.body;
+        if (!otp || !email) {
+            return res.status(400).json({
+                success: false,
+                message: "Credentials are required!"
+            })
+        }
+
+        const user = await User.findOne({
+            email,
+            verificationToken: otp,
+            verificationTokenExpireAt: { $gt: Date.now() }
+        })
+        console.log(user);
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid or Expired OTP!"
+            })
+        }
+
+        user.isVerified = true;
+        user.verificationToken = undefined;
+        user.verificationTokenExpireAt = undefined;
+        await user.save();
+
+
+        const mailOptions = {
+            from: process.env.SENDER_EMAIL,
+            to: user.email,
+            subject: "Successfully verified your email.",
+            html: WELCOME_EMAIL_TEMPLATE.replace("[Customer Name]", user.name).replace("COMPANY", "MERN-Auth").replace("[COMPANY]", "MERN-Auth"),
+        };
+
+        await transporter.sendMail(mailOptions);
+
+        return res.status(200).json({
+            success: true,
+            message: "Email verify successfully."
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error!",
+            error
+        })
+    }
+}
+
+
 export const login = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -147,3 +202,4 @@ export const logout = async (req, res) => {
         })
     }
 }
+
