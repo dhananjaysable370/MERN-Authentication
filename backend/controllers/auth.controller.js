@@ -87,8 +87,8 @@ export const register = async (req, res) => {
 
 export const verifyEmail = async (req, res) => {
     try {
-        const { email, otp } = req.body;
-        if (!otp || !email) {
+        const { otp } = req.body;
+        if (!otp) {
             return res.status(400).json({
                 success: false,
                 message: "Credentials are required!"
@@ -96,7 +96,6 @@ export const verifyEmail = async (req, res) => {
         }
 
         const user = await User.findOne({
-            email,
             verificationToken: otp,
             verificationTokenExpireAt: { $gt: Date.now() }
         })
@@ -117,7 +116,7 @@ export const verifyEmail = async (req, res) => {
         const mailOptions = {
             from: process.env.SENDER_EMAIL,
             to: user.email,
-            subject: "Successfully verified your email.",
+            subject: "Welcome to MERN-Auth",
             html: WELCOME_EMAIL_TEMPLATE.replace("[Customer Name]", user.name).replace("COMPANY", "MERN-Auth").replace("[COMPANY]", "MERN-Auth"),
         };
 
