@@ -184,7 +184,7 @@ export const WELCOME_EMAIL_TEMPLATE = `
         }
 
         .button:hover {
-            background-color: #4F46E5;
+            background-color:rgb(207, 207, 226);
         }
 
         /* Features section */

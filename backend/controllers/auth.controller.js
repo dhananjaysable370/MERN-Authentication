@@ -3,7 +3,6 @@ import bcrypt from 'bcryptjs';
 import transporter from '../mailtrap/nodemailer.js';
 import { User } from "../models/auth.model.js";
 import { VERIFICATION_EMAIL_TEMPLATE, WELCOME_EMAIL_TEMPLATE } from '../mailtrap/emailTemplates.js';
-import { text } from 'express';
 
 export const register = async (req, res) => {
     try {
