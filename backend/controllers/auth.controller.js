@@ -1,8 +1,8 @@
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs';
-import transporter from '../mailtrap/nodemailer.js';
+import transporter from '../nodemailer/nodemailer.js';
 import { User } from "../models/auth.model.js";
-import { VERIFICATION_EMAIL_TEMPLATE, WELCOME_EMAIL_TEMPLATE } from '../mailtrap/emailTemplates.js';
+import { VERIFICATION_EMAIL_TEMPLATE, WELCOME_EMAIL_TEMPLATE } from '../nodemailer/emailTemplates.js';
 
 export const register = async (req, res) => {
     try {
