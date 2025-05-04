@@ -1,57 +1,87 @@
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs';
+import transporter from '../mailtrap/nodemailer.js';
 import { User } from "../models/auth.model.js";
+import { VERIFICATION_EMAIL_TEMPLATE } from '../mailtrap/emailTemplates.js';
 
 export const register = async (req, res) => {
     try {
         const { name, email, password } = req.body;
+
         if (!name || !email || !password) {
             return res.status(400).json({
                 success: false,
-                message: "All Fields are Required!"
-            })
+                message: "All fields are required!"
+            });
         }
 
-        const userExists = await User.findOne({ email, password });
-
+        const userExists = await User.findOne({ email });
         if (userExists) {
             return res.status(409).json({
                 success: false,
-                message: "User Already Exists!"
-            })
+                message: "User already exists!"
+            });
         }
+
         const salt = bcrypt.genSaltSync(10);
         const hash = bcrypt.hashSync(password, salt);
 
-        const verificationToken = Math.floor(Math.random() * 100000 * 10)
+        const verificationToken = Math.floor(100000 + Math.random() * 900000);
+        const verificationTokenExpireAt = Date.now() + 15 * 60 * 1000;
 
         const user = new User({
             name,
             email,
             password: hash,
             verificationToken,
-            verificationTokenExpireAt: Date.now()
-        })
+            verificationTokenExpireAt
+        });
 
-        if (await user.save()) {
-            return res.status(200).json({
-                success: true,
-                message: `${user.name} Registered Successfully.`,
-                user: {
-                    ...user._doc,
-                    password: undefined
-                }
-            })
+        const registeredUser = await user.save();
+        if (!registeredUser) {
+            return res.status(500).json({
+                success: false,
+                message: "Failed to create account!"
+            });
+        }
+
+        const mailOptions = {
+            from: process.env.SENDER_EMAIL,
+            to: email,
+            subject: "Verify your email",
+            html: VERIFICATION_EMAIL_TEMPLATE.replace("{verificationCode}", verificationToken),
         };
+
+        await transporter.sendMail(mailOptions);
+
+        const token = jwt.sign({ id: user._id, email }, process.env.JWT_SECRET, { expiresIn: "1d" });
+
+        const cookie_options = {
+            httpOnly: true,
+            maxAge: 24 * 60 * 60 * 1000,
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : "strict",
+            secure: process.env.NODE_ENV === 'production'
+        };
+
+        return res.cookie('access_token', token, cookie_options).status(201).json({
+            success: true,
+            message: `${user.name} registered successfully.`,
+            user: {
+                ...user._doc,
+                password: undefined,
+                verificationToken: undefined,
+                verificationTokenExpireAt: undefined
+            }
+        });
 
     } catch (error) {
         return res.status(500).json({
             success: false,
-            message: "Internal Server Error!",
-            error
-        })
+            message: "Internal server error!",
+            error: error.message
+        });
     }
-}
+};
 export const login = async (req, res) => {
     try {
         const { email, password } = req.body;
