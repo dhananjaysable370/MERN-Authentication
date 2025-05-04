@@ -3,6 +3,7 @@ import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv'
 import cors from 'cors'
 import { dbConnection } from './config/db.js';
+
 // Config
 dotenv.config()
 
