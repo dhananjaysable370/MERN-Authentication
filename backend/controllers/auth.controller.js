@@ -228,7 +228,7 @@ export const resetPassword = async (req, res) => {
         const mailOptions = {
             from: process.env.SENDER_EMAIL,
             to: user.email,
-            subject: "Successfully reset password.",
+            subject: "Password reset successfully.",
             html: PASSWORD_RESET_SUCCESS_TEMPLATE
         };
 
