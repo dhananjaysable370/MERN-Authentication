@@ -225,6 +225,14 @@ export const resetPassword = async (req, res) => {
         user.resetPasswordExpireAt = undefined;
         await user.save();
 
+        const mailOptions = {
+            from: process.env.SENDER_EMAIL,
+            to: user.email,
+            subject: "Successfully reset password.",
+            html: PASSWORD_RESET_SUCCESS_TEMPLATE
+        };
+
+        await transporter.sendMail(mailOptions);
         return res.status(200).json({
             success: true,
             message: "Password updated successfully."
