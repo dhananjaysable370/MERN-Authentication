@@ -189,7 +189,7 @@ export const resetPassword = async (req, res) => {
     try {
         const { token } = req.params;
 
-        const { password, confirmPassword } = req.body;
+        const { password } = req.body;
 
         if (!token) {
             return res.status(400).json({
@@ -210,7 +210,7 @@ export const resetPassword = async (req, res) => {
             })
         }
 
-        if (!password || !confirmPassword || password != confirmPassword) {
+        if (!password) {
             return res.status(400).json({
                 success: false,
                 message: "New password is required!"
