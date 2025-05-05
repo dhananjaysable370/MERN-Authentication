@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken'
+import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
 import transporter from '../nodemailer/nodemailer.js';
 import { User } from "../models/auth.model.js";
@@ -135,93 +136,100 @@ export const verifyEmail = async (req, res) => {
 }
 
 
-export const sendPasswordResetOtp = async (req, res) => {
+export const sendPasswordResetToken = async (req, res) => {
     try {
         const { email } = req.body;
+
         if (!email) {
             return res.status(400).json({
                 success: false,
                 message: "Email is required!"
-            })
+            });
         }
 
-        const user = await User.findOne({ email })
+        const user = await User.findOne({ email });
         if (!user) {
             return res.status(404).json({
                 success: false,
-                message: "Please enter valid email!"
-            })
+                message: "No user found with this email!"
+            });
         }
 
-        const otp = Math.floor(100000 + Math.random() * 900000);
-        user.resetPasswordToken = otp;
+        const resetToken = crypto.randomBytes(20).toString('hex');
+        user.resetPasswordToken = resetToken;
         user.resetPasswordExpireAt = Date.now() + 15 * 60 * 1000;
 
         await user.save();
 
+        const resetURL = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
         const mailOptions = {
             from: process.env.SENDER_EMAIL,
             to: user.email,
-            subject: "Password reset otp",
-            text: `Your password reset otp is ${otp}`
+            subject: "Reset your password",
+            html: PASSWORD_RESET_REQUEST_TEMPLATE.replace("{resetURL}", resetURL),
         };
 
         await transporter.sendMail(mailOptions);
+
         return res.status(200).json({
             success: true,
-            message: "OTP sent to your email."
-        })
+            message: "Password reset request sent to your email."
+        });
+
     } catch (error) {
         return res.status(500).json({
             success: false,
             message: "Internal Server Error!",
-            error
-        })
+            error: error.message
+        });
     }
-}
+};
 
-export const verifyPasswordResetOtp = async (req, res) => {
+export const resetPassword = async (req, res) => {
     try {
-        const { newPassword, otp } = req.body;
-        if (!otp) {
+        const { token } = req.params;
+
+        const { password, confirmPassword } = req.body;
+
+        if (!token) {
             return res.status(400).json({
                 success: false,
-                message: "Credentials required!"
+                message: "Invalid Token!"
             })
         }
+
         const user = await User.findOne({
-            resetPasswordToken: otp,
+            resetPasswordToken: token,
             resetPasswordExpireAt: { $gt: Date.now() }
         })
 
         if (!user) {
             return res.status(401).json({
                 success: false,
-                message: "Invalid OTP!"
+                message: "Invalid Token or Credentials!"
+            })
+        }
+
+        if (!password || !confirmPassword || password != confirmPassword) {
+            return res.status(400).json({
+                success: false,
+                message: "New password is required!"
             })
         }
 
         const salt = bcrypt.genSaltSync(10);
-        const hash = bcrypt.hashSync(newPassword, salt);
-
-
+        const hash = bcrypt.hashSync(password, salt);
         user.password = hash;
+
         user.resetPasswordToken = undefined;
         user.resetPasswordExpireAt = undefined;
-
         await user.save();
-        const mailOptions = {
-            from: process.env.SENDER_EMAIL,
-            to: user.email,
-            subject: "Successfully reset password.",
-            html: PASSWORD_RESET_SUCCESS_TEMPLATE
-        };
 
-        await transporter.sendMail(mailOptions);
         return res.status(200).json({
             success: true,
-            message: "Password reset successfully."
+            message: "Password updated successfully."
         })
+
     } catch (error) {
         return res.status(500).json({
             success: false,
@@ -230,7 +238,6 @@ export const verifyPasswordResetOtp = async (req, res) => {
         })
     }
 }
-
 
 export const login = async (req, res) => {
     try {
