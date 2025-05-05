@@ -164,7 +164,6 @@ export const sendPasswordResetOtp = async (req, res) => {
             to: user.email,
             subject: "Password reset otp",
             text: `Your password reset otp is ${otp}`
-            // html: PASSWORD_RESET_REQUEST_TEMPLATE.replace("[Customer Name]", user.name).replace("COMPANY", "MERN-Auth").replace("[COMPANY]", "MERN-Auth"),
         };
 
         await transporter.sendMail(mailOptions);
@@ -215,7 +214,6 @@ export const verifyPasswordResetOtp = async (req, res) => {
             from: process.env.SENDER_EMAIL,
             to: user.email,
             subject: "Successfully reset password.",
-            // text: `Your password reset otp is ${otp}`
             html: PASSWORD_RESET_SUCCESS_TEMPLATE
         };
 
