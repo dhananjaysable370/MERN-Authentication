@@ -23,7 +23,7 @@ app.use(cors({
 // Routes
 app.use('/api/auth', authRouter);
 
-// Listen
+
 app.listen(process.env.PORT || 8081, () => {
     dbConnection().then(() => {
         console.log(`Connected to Mongo DB.`)

@@ -130,8 +130,8 @@ export const verifyEmail = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: "Internal Server Error!",
-            error
-        })
+            error: error.message
+        });
     }
 }
 
@@ -242,8 +242,8 @@ export const resetPassword = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: "Internal Server Error!",
-            error
-        })
+            error: error.message
+        });
     }
 }
 
@@ -282,7 +282,7 @@ export const login = async (req, res) => {
             secure: process.env.NODE_ENV === 'production'
         }
 
-        const token = jwt.sign({ id: user._id, email }, process.env.JWT_SECRET, { expiresIn: "1d" });
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
 
         return res.cookie('access_token', token, cookie_options).status(200).json({
             success: true,
@@ -292,8 +292,8 @@ export const login = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: "Internal Server Error!",
-            error
-        })
+            error: error.message
+        });
     }
 }
 export const logout = async (req, res) => {
@@ -311,8 +311,38 @@ export const logout = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: "Internal Server Error!",
-            error
-        })
+            error: error.message
+        });
     }
 }
 
+export const getUser = async (req, res) => {
+    try {
+        const { id } = req.user;
+        if (!id) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid id!"
+            })
+        }
+        const user = await User.findById(id).select("-password")
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found!"
+            })
+        }
+        return res.status(200).json({
+            success: true,
+            message: "User authenticated.",
+            user
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error!",
+            error: error.message
+        });
+    }
+}
