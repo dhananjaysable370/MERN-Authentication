@@ -3,13 +3,13 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 import axios from "axios";
 import Input from "@/components/Input";
-import { Lock, Mail } from "lucide-react";
+import { Loader, Lock, Mail } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
@@ -33,12 +33,13 @@ const Login = () => {
           },
         }
       );
-
+      setIsLoading(true);
       if (data.success) {
-        toast.success(data.message);
         setTimeout(() => {
+          toast.success(data.message);
+          setIsLoading(false);
           navigate("/home");
-        }, 1000);
+        }, 1500);
       }
     } catch (error) {
       const errorMessage =
@@ -94,8 +95,13 @@ const Login = () => {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             type="submit"
+            desabled={isLoading}
           >
-            Sign in
+            {isLoading ? (
+              <Loader className="w-6 h-6 animate-spin mx-auto" />
+            ) : (
+              "Login"
+            )}
           </motion.button>
         </form>
       </div>
