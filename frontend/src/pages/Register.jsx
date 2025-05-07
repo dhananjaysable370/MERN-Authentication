@@ -27,7 +27,7 @@ const Register = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-
+    axios.defaults.withCredentials = true;
     if (!name || !email || !password) {
       toast.error("All fields are required!");
       return;

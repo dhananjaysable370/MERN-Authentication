@@ -14,7 +14,7 @@ const Login = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-
+    axios.defaults.withCredentials = true;
     if (!email || !password) {
       toast.error("All fields are required!");
       return;
@@ -38,7 +38,16 @@ const Login = () => {
         setEmail("");
         setPassword("");
         setTimeout(() => {
-          toast.success(data.message);
+          toast.success(data.message, {
+            style: {
+              background: "linear-gradient(to right, #10b981, #059669)", // Emerald gradient
+              color: "#ffffff", // White text
+            },
+            iconTheme: {
+              primary: "#059669", // Emerald color for the icon
+              secondary: "#ffffff", // White background for the icon
+            },
+          });
           setIsLoading(false);
           navigate("/home");
         }, 1500);
