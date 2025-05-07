@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 import axios from "axios";
 import Input from "@/components/Input";
-import { Lock, Mail, User } from "lucide-react";
+import { Loader, Lock, Mail, User } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import PasswordStrength from "@/components/PasswordStrength";
 
@@ -11,14 +11,30 @@ const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState(0);
 
   const navigate = useNavigate();
+
+  const getPasswordStrength = (pass) => {
+    let strength = 0;
+    if (pass.length >= 6) strength++;
+    if (pass.match(/[a-z]/) && pass.match(/[A-Z]/)) strength++;
+    if (pass.match(/\d/)) strength++;
+    if (pass.match(/[^A-Za-z\d]/)) strength++;
+    return strength;
+  };
 
   const handleRegister = async (e) => {
     e.preventDefault();
 
     if (!name || !email || !password) {
       toast.error("All fields are required!");
+      return;
+    }
+
+    if (passwordStrength < 4) {
+      toast.error("Password is not strong enough!");
       return;
     }
 
@@ -36,10 +52,11 @@ const Register = () => {
           },
         }
       );
-
+      setIsLoading(true);
       if (data.success) {
         toast.success(data.message);
         setTimeout(() => {
+          setIsLoading(false);
           navigate("/login");
         }, 1000);
       }
@@ -49,6 +66,12 @@ const Register = () => {
         "Something went wrong. Please try again.";
       toast.error(errorMessage);
     }
+  };
+
+  const handlePasswordChange = (e) => {
+    const pass = e.target.value;
+    setPassword(pass);
+    setPasswordStrength(getPasswordStrength(pass));
   };
 
   return (
@@ -85,9 +108,9 @@ const Register = () => {
           <Input
             icon={Lock}
             type="password"
-            placeholder="******************"
+            placeholder="************"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={handlePasswordChange}
             name="password"
             required
           />
@@ -95,12 +118,19 @@ const Register = () => {
           <PasswordStrength password={password} />
 
           <motion.button
-            className="mt-5 w-full py-3 px-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-lg shadow-lg hover:from-green-600 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 cursor-pointer"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+            className={`mt-5 w-full py-3 px-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-lg shadow-lg hover:from-green-600 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 cursor-pointer ${
+              passwordStrength < 4 ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+            whileHover={{ scale: passwordStrength >= 4 ? 1.02 : 1 }}
+            whileTap={{ scale: passwordStrength >= 4 ? 0.98 : 1 }}
             type="submit"
+            disabled={passwordStrength < 4}
           >
-            Sign up
+            {isLoading ? (
+              <Loader className="w-6 h-6 animate-spin mx-auto" />
+            ) : (
+              "Sign up"
+            )}
           </motion.button>
         </form>
       </div>
