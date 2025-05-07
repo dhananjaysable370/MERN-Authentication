@@ -35,6 +35,8 @@ const Login = () => {
       );
       setIsLoading(true);
       if (data.success) {
+        setEmail("");
+        setPassword("");
         setTimeout(() => {
           toast.success(data.message);
           setIsLoading(false);
@@ -42,6 +44,8 @@ const Login = () => {
         }, 1500);
       }
     } catch (error) {
+      setEmail("");
+      setPassword("");
       const errorMessage =
         error.response?.data?.message ||
         "Something went wrong. Please try again.";
@@ -91,11 +95,13 @@ const Login = () => {
           </div>
 
           <motion.button
-            className="mt-5 w-full py-3 px-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-lg shadow-lg hover:from-green-600 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 cursor-pointer"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+            className={`mt-5 w-full py-3 px-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-lg shadow-lg hover:from-green-600 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 cursor-pointer ${
+              !email || !password ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+            whileHover={{ scale: email && password ? 1.02 : 1 }}
+            whileTap={{ scale: email && password ? 0.98 : 1 }}
             type="submit"
-            desabled={isLoading}
+            disabled={!email || !password || isLoading}
           >
             {isLoading ? (
               <Loader className="w-6 h-6 animate-spin mx-auto" />
