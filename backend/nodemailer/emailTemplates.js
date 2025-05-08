@@ -102,7 +102,7 @@ export const WELCOME_EMAIL_TEMPLATE = `
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome to Our Platform</title>
     <style type="text/css">
-        /* Base styles and reset */
+       
         body, html {
             margin: 0;
             padding: 0;
@@ -112,7 +112,6 @@ export const WELCOME_EMAIL_TEMPLATE = `
             background-color: #f5f5f5;
         }
 
-        /* Wrapper to prevent margin issues */
         .wrapper {
             width: 100%;
             table-layout: fixed;
@@ -120,7 +119,6 @@ export const WELCOME_EMAIL_TEMPLATE = `
             padding-bottom: 60px;
         }
 
-        /* Main container of the email */
         .main {
             background-color: #ffffff;
             margin: 0 auto;
@@ -132,11 +130,10 @@ export const WELCOME_EMAIL_TEMPLATE = `
             box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
         }
 
-        /* Header */
         .header {
             padding: 25px 30px;
             text-align: center;
-            background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
             color: white;
         }
 
@@ -146,13 +143,13 @@ export const WELCOME_EMAIL_TEMPLATE = `
             letter-spacing: 1px;
         }
 
-        /* Content sections */
+
         .content {
             padding: 20px 30px 10px 30px;
         }
 
         .hero {
-            background-color: #f8fafc;
+            background-color: #ecfdf5;
             padding: 20px;
             border-radius: 6px;
             margin-bottom: 25px;
@@ -160,7 +157,7 @@ export const WELCOME_EMAIL_TEMPLATE = `
         }
 
         .hero h1 {
-            color: #4338ca;
+            color: #047857;
             margin-top: 0;
             margin-bottom: 15px;
         }
@@ -170,11 +167,10 @@ export const WELCOME_EMAIL_TEMPLATE = `
             margin-bottom: 20px;
         }
 
-        /* Button */
         .button {
             display: inline-block;
             padding: 12px 24px;
-            background-color: #6366F1;
+            background-color: #10B981;
             color: white;
             text-decoration: none;
             border-radius: 6px;
@@ -184,10 +180,9 @@ export const WELCOME_EMAIL_TEMPLATE = `
         }
 
         .button:hover {
-            background-color:rgb(207, 207, 226);
+            background-color: #059669;
         }
 
-        /* Features section */
         .features {
             display: table;
             width: 100%;
@@ -205,13 +200,13 @@ export const WELCOME_EMAIL_TEMPLATE = `
         .feature-icon {
             font-size: 30px;
             margin-bottom: 10px;
-            color: #6366F1;
+            color: #10B981;
         }
 
         .feature h3 {
             margin-top: 0;
             margin-bottom: 10px;
-            color: #4338ca;
+            color: #047857;
             font-size: 16px;
         }
 
@@ -220,18 +215,18 @@ export const WELCOME_EMAIL_TEMPLATE = `
             font-size: 14px;
         }
 
-        /* Divider */
+
         .divider {
             height: 1px;
-            background-color: #e5e7eb;
+            background-color: #d1fae5;
             margin: 25px 0;
         }
 
-        /* Footer */
+
         .footer {
             padding: 20px 30px;
             text-align: center;
-            background-color: #f8fafc;
+            background-color: #ecfdf5;
             color: #6b7280;
             font-size: 12px;
         }
@@ -243,7 +238,7 @@ export const WELCOME_EMAIL_TEMPLATE = `
         .social a {
             display: inline-block;
             margin: 0 8px;
-            color: #6366F1;
+            color: #10B981;
             text-decoration: none;
         }
 
@@ -270,7 +265,7 @@ export const WELCOME_EMAIL_TEMPLATE = `
             <!-- HEADER -->
             <tr>
                 <td class="header">
-                    <div class="logo">COMPANY</div>
+                    <div class="logo">MERN-Auth</div>
                 </td>
             </tr>
 
@@ -280,7 +275,7 @@ export const WELCOME_EMAIL_TEMPLATE = `
                     <div class="hero">
                         <h1>Welcome to Our Platform!</h1>
                         <p>Thank you for verifying your email address. We're excited to have you join our community.</p>
-                        <a href="#" class="button">Get Started</a>
+                        <a href="http://localhost:5173/login" class="button">Get Started</a>
                     </div>
 
                     <p>Hello [Customer Name],</p>
@@ -307,9 +302,9 @@ export const WELCOME_EMAIL_TEMPLATE = `
                     <p>© 2025 MERN-Auth. All rights reserved.</p>
                     <p>Amravati, Maharashtra, India.</p>
                     <p>
-                        <a href="#" style="color: #6366F1;">Unsubscribe</a> |
-                        <a href="#" style="color: #6366F1;">Privacy Policy</a> |
-                        <a href="#" style="color: #6366F1;">View Online</a>
+                        <a href="#" style="color: #10B981;">Unsubscribe</a> |
+                        <a href="#" style="color: #10B981;">Privacy Policy</a> |
+                        <a href="#" style="color: #10B981;">View Online</a>
                     </p>
                 </td>
             </tr>
