@@ -54,23 +54,29 @@ const Register = () => {
         }
       );
       if (data.success) {
-        setIsLoading(false);
-        toast.success(data.message, {
-          style: {
-            background: "linear-gradient(to right, #10b981, #059669)",
-            color: "#ffffff",
-          },
-          iconTheme: {
-            primary: "#059669",
-            secondary: "#ffffff",
-          },
-        });
         setTimeout(() => {
+          toast.success(data.message, {
+            style: {
+              background: "linear-gradient(to right, #10b981, #059669)",
+              color: "#ffffff",
+            },
+            iconTheme: {
+              primary: "#059669",
+              secondary: "#ffffff",
+            },
+          });
+          setIsLoading(false);
+          setName("");
+          setEmail("");
+          setPassword("");
           navigate("/verify-email");
         }, 1000);
       }
     } catch (error) {
       setIsLoading(false);
+      setName("");
+      setEmail("");
+      setPassword("");
       const errorMessage =
         error.response?.data?.message ||
         "Something went wrong. Please try again.";

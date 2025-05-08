@@ -12,12 +12,24 @@ const EmailVerify = () => {
   const navigate = useNavigate();
 
   const handleChange = (index, value) => {
-    if (!/^\d*$/.test(value)) return;
+    if (value === "") {
+      const newOtp = [...otp];
+      newOtp[index] = "";
+      setOtp(newOtp);
+      return;
+    }
+
+    const filteredValue = value.replace(/[^0-9]/g, "");
+
+    if (filteredValue === "") return;
 
     const newOtp = [...otp];
 
-    if (value.length > 1) {
-      const pastedValues = value.slice(0, 6).split("");
+    if (filteredValue.length > 1) {
+      let pastedValues = filteredValue.slice(0, 6).split("");
+
+      pastedValues = pastedValues.slice(0, 6 - index);
+
       pastedValues.forEach((digit, i) => {
         if (index + i < 6) {
           newOtp[index + i] = digit;
@@ -25,26 +37,45 @@ const EmailVerify = () => {
       });
       setOtp(newOtp);
 
-      const nextIndex = index + pastedValues.length;
-      if (nextIndex < 6) {
-        inputRef.current[nextIndex]?.focus();
+      const nextIndex = Math.min(index + pastedValues.length, 5);
+
+      if (nextIndex < 5) {
+        setTimeout(() => {
+          inputRef.current[nextIndex]?.focus();
+        }, 0);
       } else {
-        inputRef.current[5]?.blur();
+        setTimeout(() => {
+          inputRef.current[5]?.blur();
+        }, 0);
       }
     } else {
-      newOtp[index] = value;
+      newOtp[index] = filteredValue;
       setOtp(newOtp);
 
-      if (value && index < 5) {
-        inputRef.current[index + 1]?.focus();
+      if (filteredValue && index < 5) {
+        setTimeout(() => {
+          inputRef.current[index + 1]?.focus();
+        }, 0);
       }
     }
   };
 
   const handleKeyDown = (e, index) => {
-    if (e.key === "Backspace" && !otp[index] && index > 0) {
+    if (e.key === "Backspace" && otp[index] === "" && index > 0) {
       inputRef.current[index - 1].focus();
     }
+    else if (e.key === "ArrowLeft" && index > 0) {
+      inputRef.current[index - 1].focus();
+    }
+    else if (e.key === "ArrowRight" && index < 5) {
+      inputRef.current[index + 1].focus();
+    }
+  };
+
+  const handlePaste = (e, index) => {
+    e.preventDefault();
+    const pasteData = e.clipboardData.getData("text");
+    handleChange(index, pasteData);
   };
 
   const handleSubmit = async (e) => {
@@ -135,6 +166,7 @@ const EmailVerify = () => {
                 value={digit}
                 onChange={(e) => handleChange(index, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(e, index)}
+                onPaste={(e) => handlePaste(e, index)}
                 className="w-12 h-12 text-center text-2xl font-bold bg-gray-700 text-white border-2 border-gray-500 rounded-lg focus:border-green-500 focus:outline-none"
               />
             ))}
