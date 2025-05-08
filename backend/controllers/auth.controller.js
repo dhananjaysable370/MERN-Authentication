@@ -66,7 +66,7 @@ export const register = async (req, res) => {
 
         return res.cookie('access_token', token, cookie_options).status(201).json({
             success: true,
-            message: `${user.name} registered successfully.`,
+            message: `${user.name} Email verification OTP sent to your email address.`,
             user: {
                 ...user._doc,
                 password: undefined,
@@ -124,7 +124,7 @@ export const verifyEmail = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: "Email verify successfully."
+            message: "Email verified successfully."
         })
     } catch (error) {
         return res.status(500).json({
@@ -272,6 +272,12 @@ export const login = async (req, res) => {
             })
         }
 
+        if (!user.isVerified) {
+            return res.status(401).json({
+                success: false,
+                message: "Email not verified! please verify the email first!"
+            })
+        }
         user.lastLogin = new Date();
         await user.save();
 
