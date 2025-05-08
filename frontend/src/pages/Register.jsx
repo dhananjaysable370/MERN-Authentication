@@ -39,6 +39,7 @@ const Register = () => {
     }
 
     try {
+      setIsLoading(true);
       const { data } = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/register`,
         {
@@ -52,19 +53,37 @@ const Register = () => {
           },
         }
       );
-      setIsLoading(true);
       if (data.success) {
-        toast.success(data.message);
+        setIsLoading(false);
+        toast.success(data.message, {
+          style: {
+            background: "linear-gradient(to right, #10b981, #059669)",
+            color: "#ffffff",
+          },
+          iconTheme: {
+            primary: "#059669",
+            secondary: "#ffffff",
+          },
+        });
         setTimeout(() => {
-          setIsLoading(false);
-          navigate("/login");
+          navigate("/verify-email");
         }, 1000);
       }
     } catch (error) {
+      setIsLoading(false);
       const errorMessage =
         error.response?.data?.message ||
         "Something went wrong. Please try again.";
-      toast.error(errorMessage);
+      toast.error(errorMessage, {
+        style: {
+          background: "linear-gradient(to right, #10b981, #059669)",
+          color: "#ffffff",
+        },
+        iconTheme: {
+          primary: "#059669",
+          secondary: "#ffffff",
+        },
+      });
     }
   };
 

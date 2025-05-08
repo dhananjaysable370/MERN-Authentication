@@ -21,6 +21,7 @@ const Login = () => {
     }
 
     try {
+      setIsLoading(true);
       const { data } = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/login`,
         {
@@ -33,32 +34,41 @@ const Login = () => {
           },
         }
       );
-      setIsLoading(true);
       if (data.success) {
         setEmail("");
         setPassword("");
+        setIsLoading(false);
         setTimeout(() => {
           toast.success(data.message, {
             style: {
-              background: "linear-gradient(to right, #10b981, #059669)", // Emerald gradient
-              color: "#ffffff", // White text
+              background: "linear-gradient(to right, #10b981, #059669)",
+              color: "#ffffff",
             },
             iconTheme: {
-              primary: "#059669", // Emerald color for the icon
-              secondary: "#ffffff", // White background for the icon
+              primary: "#059669",
+              secondary: "#ffffff",
             },
           });
-          setIsLoading(false);
           navigate("/home");
         }, 1500);
       }
     } catch (error) {
       setEmail("");
       setPassword("");
+      setIsLoading(false);
       const errorMessage =
         error.response?.data?.message ||
         "Something went wrong. Please try again.";
-      toast.error(errorMessage);
+      toast.error(errorMessage, {
+        style: {
+          background: "linear-gradient(to right, #10b981, #059669)",
+          color: "#ffffff",
+        },
+        iconTheme: {
+          primary: "#059669",
+          secondary: "#ffffff",
+        },
+      });
     }
   };
 

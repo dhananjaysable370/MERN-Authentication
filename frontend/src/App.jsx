@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
 import FloatingShape from "./components/FloatingShape";
+import EmailVerify from "./pages/EmailVerify";
 
 export default function App() {
   return (
@@ -35,7 +36,7 @@ export default function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/verify-email" element={<Register />} />
+        <Route path="/verify-email" element={<EmailVerify />} />
       </Routes>
     </div>
   );
