@@ -37,8 +37,8 @@ const Login = () => {
       if (data.success) {
         setEmail("");
         setPassword("");
-        setIsLoading(false);
         setTimeout(() => {
+          setIsLoading(false);
           toast.success(data.message, {
             style: {
               background: "linear-gradient(to right, #10b981, #059669)",
@@ -97,7 +97,7 @@ const Login = () => {
           <Input
             icon={Lock}
             type="password"
-            placeholder="******************"
+            placeholder="************"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             name="password"
