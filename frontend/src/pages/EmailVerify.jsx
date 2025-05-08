@@ -49,6 +49,7 @@ const EmailVerify = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    axios.defaults.withCredentials = true;
     const otpValue = otp.join("");
     if (otpValue.length === 6) {
       setIsLoading(true);
