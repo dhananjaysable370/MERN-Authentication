@@ -1,20 +1,71 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import axios from "axios";
 import Input from "@/components/Input";
 import { Loader, Lock, Mail } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isInitialAuthChecking, setIsInitialAuthChecking] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
+  const isMounted = useRef(true);
 
-  const handleRegister = async (e) => {
+  // Get the redirect path from location state or default to '/home'
+  const redirectPath = location.state?.from?.pathname || "/home";
+
+  // Check if user is already authenticated when component mounts
+  useEffect(() => {
+    // Set up cleanup to prevent memory leaks
+    isMounted.current = true;
+
+    const abortController = new AbortController();
+
+    const checkAuthStatus = async () => {
+      try {
+        const { data } = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/check-auth`,
+          {
+            withCredentials: true,
+            signal: abortController.signal,
+          }
+        );
+
+        if (data.success && isMounted.current) {
+          // Slight delay to ensure App.jsx has time to update its user state
+          setTimeout(() => {
+            if (isMounted.current) {
+              setIsInitialAuthChecking(false);
+              navigate(redirectPath, { replace: true });
+            }
+          }, 100);
+        } else if (isMounted.current) {
+          setIsInitialAuthChecking(false);
+        }
+      } catch (error) {
+        if (!axios.isCancel(error) && isMounted.current) {
+          console.error("Authentication check failed:", error);
+          setIsInitialAuthChecking(false);
+        }
+      }
+    };
+
+    checkAuthStatus();
+
+    // Cleanup function
+    return () => {
+      isMounted.current = false;
+      abortController.abort();
+    };
+  }, [navigate, redirectPath]);
+
+  const handleLogin = async (e) => {
     e.preventDefault();
-    axios.defaults.withCredentials = true;
+
     if (!email || !password) {
       toast.error("All fields are required!");
       return;
@@ -24,53 +75,71 @@ const Login = () => {
       setIsLoading(true);
       const { data } = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/login`,
+        { email, password },
         {
-          email,
-          password,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
         }
       );
-      if (data.success) {
+
+      if (data.success && isMounted.current) {
+        // Clear form fields
         setEmail("");
         setPassword("");
+
+        // Show success toast
+        toast.success(`Welcome, ${data.user?.name || "User"}!`, {
+          style: {
+            background: "linear-gradient(to right, #10b981, #059669)",
+            color: "#ffffff",
+          },
+          iconTheme: {
+            primary: "#059669",
+            secondary: "#ffffff",
+          },
+        });
+
+        // Trigger global auth state update
+        await axios.get(`${import.meta.env.VITE_BACKEND_URL}/check-auth`, {
+          withCredentials: true,
+        });
+
+        // Navigate after a short delay
         setTimeout(() => {
-          setIsLoading(false);
-          toast.success(data.message, {
-            style: {
-              background: "linear-gradient(to right, #10b981, #059669)",
-              color: "#ffffff",
-            },
-            iconTheme: {
-              primary: "#059669",
-              secondary: "#ffffff",
-            },
-          });
-          navigate("/home");
-        }, 1500);
+          if (isMounted.current) {
+            setIsLoading(false);
+            navigate(redirectPath, { replace: true });
+          }
+        }, 1000);
       }
     } catch (error) {
-      setEmail("");
-      setPassword("");
-      setIsLoading(false);
-      const errorMessage =
-        error.response?.data?.message ||
-        "Something went wrong. Please try again.";
-      toast.error(errorMessage, {
-        style: {
-          background: "linear-gradient(to right, #10b981, #059669)",
-          color: "#ffffff",
-        },
-        iconTheme: {
-          primary: "#059669",
-          secondary: "#ffffff",
-        },
-      });
+      if (isMounted.current) {
+        setIsLoading(false);
+        const errorMessage =
+          error.response?.data?.message ||
+          "Something went wrong. Please try again.";
+        toast.error(errorMessage, {
+          style: {
+            background: "linear-gradient(to right, #ef4444, #dc2626)",
+            color: "#ffffff",
+          },
+          iconTheme: {
+            primary: "#dc2626",
+            secondary: "#ffffff",
+          },
+        });
+      }
     }
   };
+
+  // Show loading state during initial auth check
+  if (isInitialAuthChecking) {
+    return (
+      <div className="flex items-center justify-center min-h-64 w-full">
+        <Loader className="w-8 h-8 text-green-500 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <motion.div
@@ -84,15 +153,16 @@ const Login = () => {
           Sign in to your account
         </h2>
 
-        <form onSubmit={handleRegister}>
+        <form onSubmit={handleLogin}>
           <Input
             icon={Mail}
             type="email"
-            placeholder="google@example.com"
+            placeholder="email@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             name="email"
             required
+            disabled={isLoading}
           />
           <Input
             icon={Lock}
@@ -102,12 +172,14 @@ const Login = () => {
             onChange={(e) => setPassword(e.target.value)}
             name="password"
             required
+            disabled={isLoading}
           />
 
-          <div className="flex items-center mb-5">
+          <div className="flex items-center justify-between mb-5">
             <Link
-              to={"/forgot-password"}
+              to="/forgot-password"
               className="text-sm text-green-400 hover:underline"
+              tabIndex={isLoading ? -1 : 0}
             >
               Forgot Password?
             </Link>
@@ -115,10 +187,12 @@ const Login = () => {
 
           <motion.button
             className={`mt-5 w-full py-3 px-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-lg shadow-lg hover:from-green-600 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 cursor-pointer ${
-              !email || !password ? "opacity-50 cursor-not-allowed" : ""
+              !email || !password || isLoading
+                ? "opacity-50 cursor-not-allowed"
+                : ""
             }`}
-            whileHover={{ scale: email && password ? 1.02 : 1 }}
-            whileTap={{ scale: email && password ? 0.98 : 1 }}
+            whileHover={{ scale: email && password && !isLoading ? 1.02 : 1 }}
+            whileTap={{ scale: email && password && !isLoading ? 0.98 : 1 }}
             type="submit"
             disabled={!email || !password || isLoading}
           >
@@ -133,7 +207,11 @@ const Login = () => {
       <div className="px-8 py-4 bg-gray-900 bg-opacity-50 flex justify-center">
         <p className="text-sm text-gray-400">
           Don't have an account?&nbsp;
-          <Link className="text-green-400 hover:underline" to={"/register"}>
+          <Link
+            className="text-green-400 hover:underline"
+            to="/register"
+            tabIndex={isLoading ? -1 : 0}
+          >
             Register
           </Link>
         </p>
