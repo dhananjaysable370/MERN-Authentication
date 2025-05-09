@@ -10,20 +10,18 @@ import PasswordStrength from "@/components/PasswordStrength";
 const ResetPassword = () => {
   const [newPassword, setNewPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isPasswordStrong, setIsPasswordStrong] = useState(false); // Track password strength
+  const [isPasswordStrong, setIsPasswordStrong] = useState(false);
   const navigate = useNavigate();
   const { token } = useParams();
 
   const handlePasswordChange = (password) => {
     setNewPassword(password);
 
-    // Validate password strength
     const isStrong = validatePasswordStrength(password);
     setIsPasswordStrong(isStrong);
   };
 
   const validatePasswordStrength = (password) => {
-    // Example password strength validation
     const hasUpperCase = /[A-Z]/.test(password);
     const hasLowerCase = /[a-z]/.test(password);
     const hasNumber = /[0-9]/.test(password);
