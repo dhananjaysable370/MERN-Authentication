@@ -1,5 +1,3 @@
-import { Button } from "@/components/ui/button";
-
 import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -7,6 +5,7 @@ import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
 import FloatingShape from "./components/FloatingShape";
 import EmailVerify from "./pages/EmailVerify";
+import ResetPassword from "./pages/ResetPassword";
 
 export default function App() {
   return (
@@ -37,6 +36,8 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/verify-email" element={<EmailVerify />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
       </Routes>
     </div>
   );
