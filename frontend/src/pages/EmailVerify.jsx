@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Loader } from "lucide-react";
@@ -10,6 +10,13 @@ const EmailVerify = () => {
   const [isLoading, setIsLoading] = useState(false);
   const inputRef = useRef([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const allFieldsFilled = otp.every((digit) => digit !== "");
+    if (allFieldsFilled && otp.length === 6) {
+      handleSubmit();
+    }
+  }, [otp]);
 
   const handleChange = (index, value) => {
     if (value === "") {
@@ -63,11 +70,9 @@ const EmailVerify = () => {
   const handleKeyDown = (e, index) => {
     if (e.key === "Backspace" && otp[index] === "" && index > 0) {
       inputRef.current[index - 1].focus();
-    }
-    else if (e.key === "ArrowLeft" && index > 0) {
+    } else if (e.key === "ArrowLeft" && index > 0) {
       inputRef.current[index - 1].focus();
-    }
-    else if (e.key === "ArrowRight" && index < 5) {
+    } else if (e.key === "ArrowRight" && index < 5) {
       inputRef.current[index + 1].focus();
     }
   };
@@ -79,11 +84,15 @@ const EmailVerify = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    axios.defaults.withCredentials = true;
+    if (e) {
+      e.preventDefault();
+    }
+
     const otpValue = otp.join("");
-    if (otpValue.length === 6) {
+    if (otpValue.length === 6 && !isLoading) {
       setIsLoading(true);
+      axios.defaults.withCredentials = true;
+
       try {
         const { data } = await axios.post(
           `${import.meta.env.VITE_BACKEND_URL}/verify-email`,
@@ -126,7 +135,8 @@ const EmailVerify = () => {
           },
         });
       }
-    } else {
+    } else if (otpValue.length < 6 && e) {
+      // Only show error if manually submitted with incomplete OTP
       toast.error("Please enter a valid 6-digit OTP.", {
         style: {
           background: "linear-gradient(to right, #10b981, #059669)",
@@ -168,6 +178,7 @@ const EmailVerify = () => {
                 onKeyDown={(e) => handleKeyDown(e, index)}
                 onPaste={(e) => handlePaste(e, index)}
                 className="w-12 h-12 text-center text-2xl font-bold bg-gray-700 text-white border-2 border-gray-500 rounded-lg focus:border-green-500 focus:outline-none"
+                disabled={isLoading}
               />
             ))}
           </div>
@@ -182,7 +193,10 @@ const EmailVerify = () => {
             disabled={otp.join("").length < 6 || isLoading}
           >
             {isLoading ? (
-              <Loader className="w-6 h-6 animate-spin mx-auto" />
+              <div className="flex items-center justify-center space-x-2">
+                <Loader className="w-5 h-5 animate-spin" />
+                <span>Verifying</span>
+              </div>
             ) : (
               "Submit"
             )}
