@@ -1,92 +1,190 @@
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { toast } from "sonner";
-import axios from "axios";
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "react-router-dom";
+import { LogOut, Menu, X, Shield } from "lucide-react";
+import PropTypes from "prop-types";
 
-const Navbar = ({ user, setUser }) => {
-  const navigate = useNavigate();
+const NavLink = ({ to, children, className = "", onClick }) => (
+  <Link
+    to={to}
+    onClick={onClick}
+    className={`text-white hover:text-emerald-300 transition-colors duration-200 ${className}`}
+  >
+    {children}
+  </Link>
+);
+
+NavLink.propTypes = {
+  to: PropTypes.string.isRequired,
+  children: PropTypes.node.isRequired,
+  className: PropTypes.string,
+  onClick: PropTypes.func,
+};
+
+const Navbar = ({ user, onLogout }) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const menuRef = useRef(null);
+
+  const isAuthenticated = Boolean(user);
 
   const handleLogout = async () => {
     try {
-      const { data } = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/logout`,
-        {},
-        { withCredentials: true }
-      );
-
-      if (data.success) {
-        toast.success(data.message, {
-          style: {
-            background: "linear-gradient(to right, #10b981, #059669)",
-            color: "#ffffff",
-          },
-          iconTheme: {
-            primary: "#059669",
-            secondary: "#ffffff",
-          },
-        });
-        setUser(null); // Clear user state
-        navigate("/login");
-      }
+      setIsLoggingOut(true);
+      await onLogout();
     } catch (error) {
-      const errorMessage =
-        error.response?.data?.message ||
-        "Something went wrong. Please try again.";
-      toast.error(errorMessage, {
-        style: {
-          background: "linear-gradient(to right, #10b981, #059669)",
-          color: "#ffffff",
-        },
-        iconTheme: {
-          primary: "#059669",
-          secondary: "#ffffff",
-        },
-      });
+      console.error("Logout failed:", error);
+    } finally {
+      setIsLoggingOut(false);
+      setIsMenuOpen(false);
     }
   };
 
-  return (
-    <nav className="bg-gray-800 text-white py-4 px-6 shadow-lg">
-      <div className="container mx-auto flex justify-between items-center">
-        <Link
-          to="/"
-          className="text-2xl font-bold bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text"
-        >
-          MERN Auth
-        </Link>
+  const toggleMenu = () => setIsMenuOpen((prev) => !prev);
 
-        <div className="flex items-center space-x-4">
-          {user ? (
-            <>
-              <span className="text-gray-300">
-                Welcome,{" "}
-                <span className="font-bold text-green-400">{user.name}</span>
-              </span>
-              <Link
-                to="/home"
-                className="py-2 px-4 bg-green-500 hover:bg-green-600 text-white rounded-lg transition duration-200"
-              >
-                Dashboard
-              </Link>
-              <button
-                onClick={handleLogout}
-                className="py-2 px-4 bg-red-500 hover:bg-red-600 text-white rounded-lg transition duration-200"
-              >
-                Logout
-              </button>
-            </>
-          ) : (
-            <Link
-              to="/login"
-              className="py-2 px-4 bg-green-500 hover:bg-green-600 text-white rounded-lg transition duration-200"
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setIsMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const renderLinks = (isMobile = false) => (
+    <>
+      {isAuthenticated ? (
+        <>
+          <NavLink
+            to="/home"
+            onClick={() => isMobile && setIsMenuOpen(false)}
+            className={
+              isMobile ? "block px-4 py-3 rounded-lg hover:bg-gray-800/50" : ""
+            }
+          >
+            Dashboard
+          </NavLink>
+          {!user.emailVerified && (
+            <NavLink
+              to="/verify-email"
+              onClick={() => isMobile && setIsMenuOpen(false)}
+              className={`${
+                isMobile
+                  ? "block px-4 py-3 text-yellow-300 hover:text-yellow-200 rounded-lg hover:bg-gray-800/50"
+                  : "text-yellow-300 hover:text-yellow-200"
+              }`}
             >
-              Login
-            </Link>
+              Verify Email
+            </NavLink>
           )}
+          <div className={`${isMobile ? "px-4 py-2" : ""} text-white/80`}>
+            Hi, {user.name || user.email.split("@")[0]}
+          </div>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleLogout}
+            disabled={isLoggingOut}
+            className={`${
+              isMobile
+                ? "w-full flex items-center justify-center space-x-2 px-4 py-3"
+                : "flex items-center space-x-2 px-4 py-2"
+            } bg-red-500/90 hover:bg-red-600 rounded-lg transition-colors disabled:opacity-70`}
+          >
+            {isLoggingOut ? (
+              <span className="animate-pulse">Logging out...</span>
+            ) : (
+              <>
+                <LogOut className="w-4 h-4" />
+                <span>Logout</span>
+              </>
+            )}
+          </motion.button>
+        </>
+      ) : (
+        <>
+          <NavLink
+            to="/login"
+            onClick={() => isMobile && setIsMenuOpen(false)}
+            className={
+              isMobile ? "block px-4 py-3 rounded-lg hover:bg-gray-800/50" : ""
+            }
+          >
+            Sign In
+          </NavLink>
+          <Link
+            to="/register"
+            onClick={() => isMobile && setIsMenuOpen(false)}
+            className={`${
+              isMobile
+                ? "block text-center px-4 py-3 bg-emerald-500 hover:bg-emerald-600 rounded-lg transition-all"
+                : "px-6 py-2 bg-emerald-500 hover:bg-emerald-600 rounded-full transition-all"
+            } font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-gray-900`}
+          >
+            Get Started
+          </Link>
+        </>
+      )}
+    </>
+  );
+
+  return (
+    <nav
+      ref={menuRef}
+      className="fixed w-full top-0 left-0 z-50 bg-transparent backdrop-blur-md"
+    >
+      <div className="container mx-auto px-4 sm:px-6 py-4">
+        <div className="flex items-center justify-between">
+          <Link to="/" className="flex items-center space-x-2 group">
+            <Shield className="w-8 h-8 text-emerald-500 group-hover:text-emerald-400 transition-colors" />
+            <span className="text-xl font-bold text-emerald-500">
+              MERN-Auth
+            </span>
+          </Link>
+
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-6">
+            {renderLinks()}
+          </div>
+
+          {/* Mobile Toggle */}
+          <button
+            className="md:hidden text-white hover:text-emerald-400 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            onClick={toggleMenu}
+            aria-label="Toggle menu"
+            aria-expanded={isMenuOpen}
+          >
+            {isMenuOpen ? (
+              <X className="w-6 h-6" />
+            ) : (
+              <Menu className="w-6 h-6" />
+            )}
+          </button>
         </div>
+
+        {/* Mobile Menu */}
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, maxHeight: 0 }}
+              animate={{ opacity: 1, maxHeight: 500 }}
+              exit={{ opacity: 0, maxHeight: 0 }}
+              transition={{ duration: 0.2 }}
+              className="md:hidden mt-4 space-y-4 pb-4 overflow-hidden"
+            >
+              {renderLinks(true)}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </nav>
   );
+};
+
+Navbar.propTypes = {
+  user: PropTypes.object,
+  onLogout: PropTypes.func.isRequired,
 };
 
 export default Navbar;

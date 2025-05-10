@@ -1,16 +1,29 @@
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import ForgotPassword from "./pages/ForgotPassword";
-import FloatingShape from "./components/FloatingShape";
-import EmailVerify from "./pages/EmailVerify";
-import ResetPassword from "./pages/ResetPassword";
-import { useEffect, useState } from "react";
+import {
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
+import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import { Loader } from "lucide-react";
 
-// Reusable Loading Screen Component
+import LandingPage from "./pages/LandingPage";
+import Home from "./pages/Home";
+import EmailVerify from "./pages/EmailVerify";
+import FloatingShape from "./components/FloatingShape";
+import Navbar from "./components/Navbar";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
+
+const api = axios.create({
+  baseURL: import.meta.env.VITE_BACKEND_URL,
+  withCredentials: true,
+});
+
 const LoadingScreen = () => (
   <div className="flex items-center justify-center min-h-screen bg-transparent">
     <Loader className="w-10 h-10 text-green-500 animate-spin" />
@@ -19,145 +32,158 @@ const LoadingScreen = () => (
 
 export default function App() {
   const [user, setUser] = useState(null);
+  const [authChecked, setAuthChecked] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+
   const location = useLocation();
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    // Create an abort controller to handle cleanup
-    const abortController = new AbortController();
-
-    const checkAuth = async () => {
-      setIsLoading(true);
-      axios.defaults.withCredentials = true;
-
-      try {
-        const { data } = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/check-auth`,
-          {
-            signal: abortController.signal,
-          }
-        );
-        if (data.success) {
-          setUser(data.user);
-        } else {
-          setUser(null);
-        }
-      } catch (error) {
-        if (!axios.isCancel(error)) {
-          console.error("Authentication check failed:", error);
-          setUser(null);
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    checkAuth();
-
-    // Cleanup function to abort request when component unmounts
-    return () => {
-      abortController.abort();
-    };
+  const checkAuth = useCallback(async (signal) => {
+    try {
+      const { data } = await api.get("/check-auth", { signal });
+      setUser(data.success ? data.user : null);
+    } catch (error) {
+      if (!axios.isCancel(error)) setUser(null);
+    } finally {
+      setIsLoading(false);
+      setAuthChecked(true);
+    }
   }, []);
 
-  // Listen for auth-related path changes to recheck authentication
   useEffect(() => {
-    const authPaths = ["/login", "/register", "/home", "/"];
-    if (authPaths.includes(location.pathname)) {
-      const checkAuthOnPathChange = async () => {
-        try {
-          const { data } = await axios.get(
-            `${import.meta.env.VITE_BACKEND_URL}/check-auth`
-          );
-          if (data.success) {
-            setUser(data.user);
-          } else {
-            setUser(null);
-          }
-        } catch (error) {
-          setUser(null);
-        }
-      };
+    const controller = new AbortController();
+    checkAuth(controller.signal);
+    return () => controller.abort();
+  }, [checkAuth]);
 
-      checkAuthOnPathChange();
-    }
-  }, [location.pathname]);
+  const handleAuthUpdate = useCallback(
+    (userData) => {
+      setUser(userData);
+      setTimeout(() => {
+        navigate(userData ? "/home" : "/login", { replace: true });
+      }, 0);
+    },
+    [navigate]
+  );
 
-  const ProtectedRoute = ({ element }) => {
-    if (isLoading) {
-      return <LoadingScreen />;
-    }
+  const ProtectedRoute = ({ children }) => {
+    useEffect(() => {
+      if (authChecked && !isLoading && !user) {
+        navigate("/login", {
+          state: { from: location.pathname },
+          replace: true,
+        });
+      }
+    }, [authChecked, isLoading, user, location.pathname, navigate]);
 
-    return user ? element : <Navigate to="/login" state={{ from: location }} />;
+    if (!authChecked || isLoading) return <LoadingScreen />;
+    return user ? (
+      <>
+        <Navbar user={user} onLogout={() => handleAuthUpdate(null)} />
+        {children}
+      </>
+    ) : null;
   };
 
-  const PublicRoute = ({ element }) => {
-    if (isLoading) {
-      return <LoadingScreen />;
-    }
+  const PublicRoute = ({ children }) => {
+    useEffect(() => {
+      if (authChecked && !isLoading && user) {
+        navigate("/home", { replace: true });
+      }
+    }, [authChecked, isLoading, user, navigate]);
 
-    return !user ? element : <Navigate to="/home" />;
-  };
-
-  // Add a default route to redirect to home or login
-  const DefaultRoute = () => {
-    if (isLoading) {
-      return <LoadingScreen />;
-    }
-
-    return <Navigate to={user ? "/home" : "/login"} />;
+    if (!authChecked || isLoading) return <LoadingScreen />;
+    return !user ? children : null;
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-green-900 to-emerald-900 flex items-center justify-center relative overflow-hidden">
-      <FloatingShape
-        color="bg-green-500"
-        size="w-64 h-64"
-        top="-5%"
-        left="10%"
-        delay={0}
-      />
-      <FloatingShape
-        color="bg-emerald-500"
-        size="w-48 h-48"
-        top="70%"
-        left="80%"
-        delay={5}
-      />
-      <FloatingShape
-        color="bg-lime-500"
-        size="w-32 h-32"
-        top="40%"
-        left="-10%"
-        delay={2}
-      />
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-green-900 to-emerald-900 relative overflow-hidden">
+      <div className="fixed inset-0 pointer-events-none">
+        <FloatingShape
+          color="bg-green-500"
+          size="w-64 h-64"
+          top="-5%"
+          left="10%"
+          delay={0}
+        />
+        <FloatingShape
+          color="bg-emerald-500"
+          size="w-48 h-48"
+          top="70%"
+          left="80%"
+          delay={5}
+        />
+        <FloatingShape
+          color="bg-lime-500"
+          size="w-32 h-32"
+          top="40%"
+          left="-10%"
+          delay={2}
+        />
+      </div>
 
       <Routes>
-        {/* Protected Routes */}
-        <Route path="/home" element={<ProtectedRoute element={<Home />} />} />
         <Route
-          path="/reset-password/:token"
-          element={<PublicRoute element={<ResetPassword />} />}
-        />
-        <Route
-          path="/verify-email"
-          element={<ProtectedRoute element={<EmailVerify />} />}
+          path="/"
+          element={
+            <>
+              <Navbar user={user} onLogout={() => handleAuthUpdate(null)} />
+              <LandingPage />
+            </>
+          }
         />
 
-        {/* Public Routes */}
-        <Route path="/login" element={<PublicRoute element={<Login />} />} />
+        <Route
+          path="/login"
+          element={
+            <PublicRoute>
+              <Login onLogin={handleAuthUpdate} />
+            </PublicRoute>
+          }
+        />
         <Route
           path="/register"
-          element={<PublicRoute element={<Register />} />}
+          element={
+            <PublicRoute>
+              <Register onRegister={handleAuthUpdate} />
+            </PublicRoute>
+          }
         />
         <Route
           path="/forgot-password"
-          element={<PublicRoute element={<ForgotPassword />} />}
+          element={
+            <PublicRoute>
+              <ForgotPassword />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/reset-password/:token"
+          element={
+            <PublicRoute>
+              <ResetPassword />
+            </PublicRoute>
+          }
         />
 
-        {/* Default Route */}
-        <Route path="/" element={<DefaultRoute />} />
-        <Route path="*" element={<Navigate to="/" />} />
+        <Route
+          path="/home"
+          element={
+            <ProtectedRoute>
+              <Home user={user} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/verify-email"
+          element={
+            <ProtectedRoute>
+              <EmailVerify user={user} />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </div>
   );

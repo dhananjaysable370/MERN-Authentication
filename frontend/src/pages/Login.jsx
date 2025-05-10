@@ -1,81 +1,64 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
-import axios from "axios";
-import Input from "@/components/Input";
-import { Loader, Lock, Mail } from "lucide-react";
+import { Loader, Lock, Mail, ArrowLeft } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import PropTypes from "prop-types";
+import axios from "axios";
 
-const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+import Input from "@/components/Input";
+
+const Login = ({ onLogin }) => {
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [touched, setTouched] = useState({ email: false, password: false });
   const [isLoading, setIsLoading] = useState(false);
-  const [isInitialAuthChecking, setIsInitialAuthChecking] = useState(true);
+
   const navigate = useNavigate();
   const location = useLocation();
   const isMounted = useRef(true);
 
-  // Get the redirect path from location state or default to '/home'
-  const redirectPath = location.state?.from?.pathname || "/home";
+  const redirectTo = location.state?.from?.pathname || "/home";
 
-  // Check if user is already authenticated when component mounts
-  useEffect(() => {
-    // Set up cleanup to prevent memory leaks
-    isMounted.current = true;
+  const validate = {
+    email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email),
+    password: formData.password.length >= 6,
+  };
 
-    const abortController = new AbortController();
+  const isFormValid = Object.values(validate).every(Boolean);
 
-    const checkAuthStatus = async () => {
-      try {
-        const { data } = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/check-auth`,
-          {
-            withCredentials: true,
-            signal: abortController.signal,
-          }
-        );
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
-        if (data.success && isMounted.current) {
-          // Slight delay to ensure App.jsx has time to update its user state
-          setTimeout(() => {
-            if (isMounted.current) {
-              setIsInitialAuthChecking(false);
-              navigate(redirectPath, { replace: true });
-            }
-          }, 100);
-        } else if (isMounted.current) {
-          setIsInitialAuthChecking(false);
-        }
-      } catch (error) {
-        if (!axios.isCancel(error) && isMounted.current) {
-          console.error("Authentication check failed:", error);
-          setIsInitialAuthChecking(false);
-        }
-      }
-    };
+  const handleBlur = (e) => {
+    setTouched((prev) => ({ ...prev, [e.target.name]: true }));
+  };
 
-    checkAuthStatus();
-
-    // Cleanup function
-    return () => {
-      isMounted.current = false;
-      abortController.abort();
-    };
-  }, [navigate, redirectPath]);
+  const getError = (field) => {
+    if (!touched[field]) return null;
+    if (!validate[field]) {
+      if (field === "email") return "Please enter a valid email address";
+      if (field === "password") return "Password must be at least 6 characters";
+    }
+    return null;
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    if (!email || !password) {
-      toast.error("All fields are required!");
+    if (!isFormValid) {
+      setTouched({ email: true, password: true });
+      toast.error("Please fix the errors before submitting.");
       return;
     }
 
     try {
       setIsLoading(true);
+
       const { data } = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/login`,
-        { email, password },
+        formData,
         {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
@@ -83,102 +66,89 @@ const Login = () => {
       );
 
       if (data.success && isMounted.current) {
-        // Clear form fields
-        setEmail("");
-        setPassword("");
-
-        // Show success toast
-        toast.success(`Welcome, ${data.user?.name || "User"}!`, {
+        toast.success(`Welcome back, ${data.user?.name || "User"}!`, {
           style: {
             background: "linear-gradient(to right, #10b981, #059669)",
-            color: "#ffffff",
+            color: "#fff",
           },
           iconTheme: {
             primary: "#059669",
-            secondary: "#ffffff",
+            secondary: "#fff",
           },
         });
 
-        // Trigger global auth state update
-        await axios.get(`${import.meta.env.VITE_BACKEND_URL}/check-auth`, {
-          withCredentials: true,
-        });
-
-        // Navigate after a short delay
-        setTimeout(() => {
-          if (isMounted.current) {
-            setIsLoading(false);
-            navigate(redirectPath, { replace: true });
-          }
-        }, 1000);
+        onLogin?.(data.user);
       }
-    } catch (error) {
+    } catch (err) {
       if (isMounted.current) {
-        setIsLoading(false);
-        const errorMessage =
-          error.response?.data?.message ||
-          "Something went wrong. Please try again.";
-        toast.error(errorMessage, {
+        const msg =
+          err.response?.data?.message || "Login failed. Please try again.";
+        toast.error(msg, {
           style: {
             background: "linear-gradient(to right, #ef4444, #dc2626)",
-            color: "#ffffff",
+            color: "#fff",
           },
           iconTheme: {
             primary: "#dc2626",
-            secondary: "#ffffff",
+            secondary: "#fff",
           },
         });
       }
+    } finally {
+      if (isMounted.current) setIsLoading(false);
     }
   };
-
-  // Show loading state during initial auth check
-  if (isInitialAuthChecking) {
-    return (
-      <div className="flex items-center justify-center min-h-64 w-full">
-        <Loader className="w-8 h-8 text-green-500 animate-spin" />
-      </div>
-    );
-  }
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="min-w-md bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden"
+      className="min-w-md max-w-md w-full mx-auto bg-gray-800 bg-opacity-50 backdrop-blur-xl rounded-2xl shadow-xl"
     >
       <div className="p-8">
-        <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
-          Sign in to your account
-        </h2>
+        <div className="flex items-center mb-6">
+          <Link to="/" className="text-green-400 hover:text-green-300 mr-4">
+            <ArrowLeft size={20} />
+          </Link>
+          <h2 className="text-3xl font-bold text-center bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
+            Welcome Back
+          </h2>
+        </div>
 
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleLogin} noValidate>
           <Input
             icon={Mail}
             type="email"
-            placeholder="email@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
             name="email"
+            placeholder="email@example.com"
+            value={formData.email}
+            onChange={handleInputChange}
+            onBlur={handleBlur}
             required
+            error={getError("email")}
             disabled={isLoading}
+            aria-label="Email Address"
           />
+
           <Input
             icon={Lock}
             type="password"
-            placeholder="************"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
             name="password"
+            placeholder="************"
+            value={formData.password}
+            onChange={handleInputChange}
+            onBlur={handleBlur}
             required
+            error={getError("password")}
             disabled={isLoading}
+            aria-label="Password"
           />
 
-          <div className="flex items-center justify-between mb-5">
+          <div className="flex justify-between mt-2 mb-5 text-sm">
             <Link
               to="/forgot-password"
-              className="text-sm text-green-400 hover:underline"
+              className="text-green-400 hover:underline"
               tabIndex={isLoading ? -1 : 0}
             >
               Forgot Password?
@@ -186,38 +156,44 @@ const Login = () => {
           </div>
 
           <motion.button
-            className={`mt-5 w-full py-3 px-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-lg shadow-lg hover:from-green-600 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 cursor-pointer ${
-              !email || !password || isLoading
-                ? "opacity-50 cursor-not-allowed"
-                : ""
-            }`}
-            whileHover={{ scale: email && password && !isLoading ? 1.02 : 1 }}
-            whileTap={{ scale: email && password && !isLoading ? 0.98 : 1 }}
             type="submit"
-            disabled={!email || !password || isLoading}
+            disabled={!isFormValid || isLoading}
+            whileHover={{ scale: isFormValid && !isLoading ? 1.02 : 1 }}
+            whileTap={{ scale: isFormValid && !isLoading ? 0.98 : 1 }}
+            className={`mt-5 w-full py-3 px-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-lg shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
+              !isFormValid || isLoading
+                ? "opacity-50 cursor-not-allowed"
+                : "hover:from-green-600 hover:to-emerald-700"
+            }`}
+            aria-label="Sign In"
           >
             {isLoading ? (
               <Loader className="w-6 h-6 animate-spin mx-auto" />
             ) : (
-              "Login"
+              "Sign In"
             )}
           </motion.button>
         </form>
       </div>
-      <div className="px-8 py-4 bg-gray-900 bg-opacity-50 flex justify-center">
+
+      <div className="px-8 py-4 bg-gray-900/50 text-center">
         <p className="text-sm text-gray-400">
-          Don't have an account?&nbsp;
+          Don’t have an account?{" "}
           <Link
-            className="text-green-400 hover:underline"
             to="/register"
+            className="text-green-400 hover:underline"
             tabIndex={isLoading ? -1 : 0}
           >
-            Register
+            Create Account
           </Link>
         </p>
       </div>
     </motion.div>
   );
+};
+
+Login.propTypes = {
+  onLogin: PropTypes.func.isRequired,
 };
 
 export default Login;
