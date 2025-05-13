@@ -25,7 +25,7 @@ A secure and fully functional authentication system built with the MERN stack (M
 - React Router DOM
 - Tailwind CSS
 - Axios
-- React Toastify
+- Sonner (for toast/alert messages)
 - Framer Motion (for animations)
 
 **Backend**:
