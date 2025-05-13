@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate, useParams } from "react-router-dom";
-import { Lock } from "lucide-react";
+import { Lock, Loader } from "lucide-react";
 import { toast } from "sonner";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
@@ -10,7 +10,7 @@ import PasswordStrengthMeter from "../components/PasswordStrengthMeter";
 
 const ResetPassword = () => {
   const [password, setPassword] = useState("");
-  const { BACKEND_URL, isLoading } = useAuth();
+  const { BACKEND_URL, isLoading, setIsLoading } = useAuth();
   const [passwordStrength, setPasswordStrength] = useState(0);
   const [isPasswordStrong, setIsPasswordStrong] = useState(false);
 
@@ -33,6 +33,7 @@ const ResetPassword = () => {
   }, [password]);
 
   const handleSubmit = async (e) => {
+    setIsLoading(true);
     e.preventDefault();
     try {
       const { data } = await axios.post(
@@ -48,9 +49,11 @@ const ResetPassword = () => {
         toast.success(data.message);
       }
       setTimeout(() => {
+        setIsLoading(false);
         navigate("/login");
       }, 2000);
     } catch (error) {
+      setIsLoading(false);
       toast.error(error?.response?.data?.message || "Error resetting password");
     }
   };
@@ -98,7 +101,14 @@ const ResetPassword = () => {
             type="submit"
             disabled={isLoading || !isPasswordStrong}
           >
-            {isLoading ? "Resetting..." : "Set New Password"}
+            {isLoading ? (
+              <div className="flex justify-center items-center gap-2">
+                <Loader className="animate-spin " />
+                <p>Updating...</p>
+              </div>
+            ) : (
+              "Update Password"
+            )}
           </motion.button>
         </form>
       </div>
