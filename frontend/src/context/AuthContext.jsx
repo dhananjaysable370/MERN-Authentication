@@ -14,6 +14,7 @@ export const AuthProvider = ({ children }) => {
   const [loadingSpinner, setLoadingSpinner] = useState(false);
 
   const checkAuth = async () => {
+    axios.defaults.withCredentials = true;
     setLoadingSpinner(true);
     try {
       axios.defaults.withCredentials = true;
