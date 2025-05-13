@@ -17,7 +17,6 @@ const Register = () => {
   const [isPasswordStrong, setIsPasswordStrong] = useState(false);
   const navigate = useNavigate();
 
-  // check email
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   useEffect(() => {
     const calculateStrength = (pass) => {

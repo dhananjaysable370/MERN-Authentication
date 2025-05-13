@@ -8,6 +8,8 @@ import { useAuth } from "./context/AuthContext";
 import FloatingShape from "./components/FloatingShape";
 import { Toaster } from "sonner";
 import LoadingSpinner from "./components/LoadingSpinner";
+import ForgotPassword from "./Pages/ForgotPassword";
+import ResetPassword from "./Pages/ResetPassword";
 
 const App = () => {
   const { isLoggedIn, checkAuth, authUser, loadingSpinner } = useAuth();
@@ -54,6 +56,12 @@ const App = () => {
           {!isLoggedIn ? (
             <>
               <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route
+                path="/reset-password/:token"
+                element={<ResetPassword />}
+              />
+
               <Route path="/login" element={<Login />} />
               <Route path="*" element={<Navigate to="/login" replace />} />
             </>
