@@ -55,16 +55,7 @@ export const register = async (req, res) => {
 
         await transporter.sendMail(mailOptions);
 
-        const token = jwt.sign({ id: user._id, email }, process.env.JWT_SECRET, { expiresIn: "1d" });
-
-        const cookie_options = {
-            httpOnly: true,
-            maxAge: 24 * 60 * 60 * 1000,
-            sameSite: process.env.NODE_ENV === 'production' ? 'none' : "strict",
-            secure: process.env.NODE_ENV === 'production'
-        };
-
-        return res.cookie('access_token', token, cookie_options).status(201).json({
+        return res.status(201).json({
             success: true,
             message: `${user.name} Email verification OTP sent to your email address.`,
             user: {
@@ -261,13 +252,6 @@ export const login = async (req, res) => {
             return res.status(401).json({
                 success: false,
                 message: "Invalid credentials."
-            });
-        }
-
-        if (!user.isVerified) {
-            return res.status(403).json({
-                success: false,
-                message: "Email not verified. Please check your inbox."
             });
         }
 
