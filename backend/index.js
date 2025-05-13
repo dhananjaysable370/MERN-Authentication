@@ -20,7 +20,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(cors({
-    origin: true,
+    origin: "https://mern-auth-2b3j.onrender.com",
     credentials: true
 }));
 
