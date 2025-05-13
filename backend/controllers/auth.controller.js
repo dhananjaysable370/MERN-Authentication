@@ -330,7 +330,7 @@ export const login = async (req, res) => {
             secure: process.env.NODE_ENV === 'production'
         };
 
-        return res.cookie('access_token', token, cookie_options).status(200).json({
+        return res.cookie('token', token, cookie_options).status(200).json({
             success: true,
             message: `Welcome back, ${user.name}.`,
             user: {
@@ -354,7 +354,7 @@ export const logout = async (req, res) => {
             sameSite: process.env.NODE_ENV === 'production' ? 'none' : "strict",
             secure: process.env.NODE_ENV === 'production'
         }
-        return res.clearCookie('access_token', cookie_options).status(200).json({
+        return res.clearCookie('token', cookie_options).status(200).json({
             success: true,
             message: "Logged out successfully."
         })

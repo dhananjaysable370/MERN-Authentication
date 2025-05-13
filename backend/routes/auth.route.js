@@ -15,7 +15,7 @@ import { checkAuth } from '../middlewares/checkAuth.js';
 const router = express.Router();
 
 router.get('/check-auth', checkAuth, getUser);
-router.get('/resend-otp',checkAuth,resendOtp);
+router.get('/resend-otp', checkAuth, resendOtp);
 
 router.post('/register', register);
 router.post('/login', login);

@@ -2,16 +2,16 @@ import jwt from 'jsonwebtoken';
 
 export const checkAuth = async (req, res, next) => {
     try {
-        const { access_token } = req.cookies;
+        const { token } = req.cookies;
 
-        if (!access_token) {
+        if (!token) {
             return res.status(401).json({
                 success: false,
                 message: "Access token is missing!"
             });
         }
 
-        const decoded = jwt.verify(access_token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
         req.user = {
             id: decoded.id
@@ -30,3 +30,4 @@ export const checkAuth = async (req, res, next) => {
         });
     }
 };
+

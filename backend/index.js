@@ -5,37 +5,46 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dbConnection } from './config/db.js';
-import authRouter from './routes/auth.route.js';
+import router from './routes/auth.route.js';
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 8081;
 
-const _dirname = path.resolve()
+// Set up directory paths for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
+// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-
 app.use(cors({
-    origin: process.env.CLIENT_URL,
+    origin: "*",
     credentials: true
 }));
 
-app.use('/api/auth', authRouter);
+// API Routes
+app.use('/api/auth', router);
 
-app.use(express.static(path.join(_dirname, "/frontend/dist")));
-app.get("*", (_, res) => {
-    res.sendFile(path.resolve(_dirname, "frontend", "dist", "index.html"))
-})
-
-app.listen(PORT, async () => {
-    try {
-        await dbConnection();
-        console.log('✅ Connected to MongoDB');
-        console.log(`🚀 Server running on port ${PORT}`);
-    } catch (error) {
-        console.error('❌ Failed to connect to MongoDB:', error.message);
-    }
+app.use(express.static(path.join(__dirname, "../frontend/dist")));
+app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "../frontend/dist/index.html"));
 });
+
+const startServer = async () => {
+    try {
+        dbConnection();
+        console.log('Connected to MongoDB');
+
+        app.listen(PORT, () => {
+            console.log(`Server running on port ${PORT}`);
+        });
+    } catch (error) {
+        console.error('Failed to connect to MongoDB:', error.message);
+        process.exit(1);
+    }
+};
+
+startServer();
