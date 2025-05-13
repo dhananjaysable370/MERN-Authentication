@@ -75,6 +75,69 @@ export const register = async (req, res) => {
     }
 };
 
+export const resendOtp = async (req, res) => {
+    try {
+        const { id } = req.user;
+        if (!id) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid or expired id."
+            });
+        }
+
+        const user = await User.findById(id).select("-password");
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found."
+            });
+        }
+
+        if (user.isVerified) {
+            return res.status(400).json({
+                success: false,
+                message: `${user.name} is already verified!`
+            });
+        }
+
+        const verificationToken = Math.floor(100000 + Math.random() * 900000);
+        const verificationTokenExpireAt = Date.now() + 15 * 60 * 1000;
+
+        await User.findByIdAndUpdate(id, {
+            verificationToken: verificationToken,
+            verificationTokenExpireAt: verificationTokenExpireAt
+        });
+
+        const email = user.email;
+
+        const mailOptions = {
+            from: process.env.SENDER_EMAIL,
+            to: email,
+            subject: "Verify your email",
+            html: VERIFICATION_EMAIL_TEMPLATE.replace("{verificationCode}", verificationToken),
+        };
+
+        await transporter.sendMail(mailOptions);
+
+        return res.status(200).json({
+            success: true,
+            message: `${user.name} Email verification OTP resent to your email address.`,
+            user: {
+                ...user._doc,
+                password: undefined,
+                verificationToken: undefined,
+                verificationTokenExpireAt: undefined
+            }
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error!",
+            error: error.message
+        });
+    }
+}
 
 export const verifyEmail = async (req, res) => {
     try {
@@ -273,10 +336,8 @@ export const login = async (req, res) => {
             user: {
                 ...user._doc,
                 password: undefined,
-                token: token
             }
         });
-
     } catch (error) {
         return res.status(500).json({
             success: false,

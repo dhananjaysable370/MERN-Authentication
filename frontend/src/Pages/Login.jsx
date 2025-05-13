@@ -26,6 +26,7 @@ const Login = () => {
   const isFormValid =
     email.trim() !== "" && password.trim() !== "" && emailRegex.test(email);
 
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -48,7 +49,7 @@ const Login = () => {
         setAuthUser(data.user);
 
         if (!data.user.isVerified) {
-          setIsLoggedIn(false);
+          setIsLoggedIn(true);
           return navigate("/verify-email");
         }
         setIsLoggedIn(true);
@@ -87,6 +88,7 @@ const Login = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               onBlur={() => setTouched({ ...touched, email: true })}
+              autoComplete="email"
               className="w-full pl-10 pr-3 py-2 bg-gray-800 bg-opacity-50 rounded-lg border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500 text-white placeholder-gray-400 transition duration-200"
             />
           </div>
