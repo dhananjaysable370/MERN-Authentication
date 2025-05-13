@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -15,11 +16,9 @@ const EmailVerify = () => {
 
   const { setIsLoggedIn, isLoading, BACKEND_URL } = useAuth();
 
-  // Handle OTP input changes
   const handleChange = (index, value) => {
-    // Handle paste event
     if (value.length > 1) {
-      const cleanValue = value.replace(/\D/g, ""); // Remove non-digits
+      const cleanValue = value.replace(/\D/g, "");
       const pastedCode = cleanValue.slice(0, 6).split("");
       const newCode = [...code];
 
@@ -28,7 +27,6 @@ const EmailVerify = () => {
       }
       setCode(newCode);
 
-      // Focus on the appropriate field after paste
       const lastFilledIndex = Math.min(pastedCode.length - 1, 5);
       const nextFocusIndex = lastFilledIndex < 5 ? lastFilledIndex + 1 : 5;
 
@@ -36,14 +34,11 @@ const EmailVerify = () => {
         inputRefs.current[nextFocusIndex].focus();
       }
     } else {
-      // Normal single digit input
       if (/^\d*$/.test(value)) {
-        // Only allow digits
         const newCode = [...code];
         newCode[index] = value;
         setCode(newCode);
 
-        // Auto-advance to next field
         if (value && index < 5) {
           inputRefs.current[index + 1].focus();
         }
@@ -52,15 +47,12 @@ const EmailVerify = () => {
   };
 
   const handleKeyDown = (index, e) => {
-    // Move to previous field on backspace when current field is empty
     if (e.key === "Backspace" && !code[index] && index > 0) {
       inputRefs.current[index - 1].focus();
     } else if (e.key === "ArrowLeft" && index > 0) {
-      // Navigate left with arrow key
       e.preventDefault();
       inputRefs.current[index - 1].focus();
     } else if (e.key === "ArrowRight" && index < 5) {
-      // Navigate right with arrow key
       e.preventDefault();
       inputRefs.current[index + 1].focus();
     }
@@ -71,7 +63,7 @@ const EmailVerify = () => {
 
     try {
       setResendDisabled(true);
-      setCountdown(60); // Start a 60-second countdown
+      setCountdown(60);
 
       axios.defaults.withCredentials = true;
       const { data } = await axios.get(`${BACKEND_URL}/resend-otp`);
@@ -120,7 +112,6 @@ const EmailVerify = () => {
       toast.error(errMsg);
       console.error("Verification error:", error);
 
-      // Clear the form on error for better UX
       setCode(["", "", "", "", "", ""]);
       if (inputRefs.current[0]) {
         inputRefs.current[0].focus();
@@ -130,7 +121,6 @@ const EmailVerify = () => {
     }
   };
 
-  // Countdown timer for resend button
   useEffect(() => {
     if (countdown <= 0) {
       setResendDisabled(false);
@@ -144,7 +134,6 @@ const EmailVerify = () => {
     return () => clearTimeout(timer);
   }, [countdown]);
 
-  // Auto-submit when all fields are filled
   useEffect(() => {
     if (code.every((digit) => digit !== "") && code.length === 6) {
       handleSubmit();
@@ -179,7 +168,7 @@ const EmailVerify = () => {
                 type="text"
                 inputMode="numeric"
                 aria-label={`Digit ${index + 1}`}
-                maxLength={6} // Allow paste of all 6 digits
+                maxLength={6}
                 value={digit}
                 onChange={(e) => handleChange(index, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(index, e)}

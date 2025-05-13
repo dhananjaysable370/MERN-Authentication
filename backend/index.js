@@ -7,17 +7,13 @@ import { fileURLToPath } from 'url';
 import { dbConnection } from './config/db.js';
 import authRouter from './routes/auth.route.js';
 
-// Load environment variables
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 8081;
 
-// Fix __dirname in ES module scope
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const _dirname = path.resolve()
 
-// Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -27,20 +23,13 @@ app.use(cors({
     credentials: true
 }));
 
-// API Routes
 app.use('/api/auth', authRouter);
 
-// Serve frontend in production
-if (process.env.NODE_ENV === 'production') {
-    const frontendPath = path.join(__dirname, 'frontend', 'dist');
-    app.use(express.static(frontendPath));
+app.use(express.static(path.join(_dirname, "/frontend/dist")));
+app.get("*", (_, res) => {
+    res.sendFile(path.resolve(_dirname, "frontend", "dist", "index.html"))
+})
 
-    app.get('*', (req, res) => {
-        res.sendFile(path.resolve(frontendPath, 'index.html'));
-    });
-}
-
-// Start server and connect to DB
 app.listen(PORT, async () => {
     try {
         await dbConnection();

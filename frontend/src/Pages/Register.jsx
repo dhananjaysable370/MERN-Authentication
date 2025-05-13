@@ -57,8 +57,6 @@ const Register = () => {
         toast.success(data.message);
         const isVerified = data?.user?.isVerified ?? false;
 
-        console.log("isVerified value:", isVerified);
-
         if (isVerified) {
           setAuthUser(data.user);
           navigate("/login");
