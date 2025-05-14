@@ -53,7 +53,16 @@ const Register = () => {
       );
 
       if (data.success) {
-        toast.success(data.message);
+        toast.success(data.message, {
+          style: {
+            background: "rgba(32, 56, 70, 0.6)",
+            color: "#fff",
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)",
+            border: "1px solid rgba(255,255,255,0.15)",
+            boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
+          },
+        });
         const isVerified = data?.user?.isVerified ?? false;
 
         if (isVerified) {
@@ -67,7 +76,16 @@ const Register = () => {
     } catch (error) {
       const message =
         error?.response?.data?.message || "Registration failed. Try again.";
-      toast.error(message);
+      toast.error(message, {
+        style: {
+          background: "rgba(32, 56, 70, 0.6)",
+          color: "#fff",
+          backdropFilter: "blur(8px)",
+          WebkitBackdropFilter: "blur(8px)",
+          border: "1px solid rgba(255,255,255,0.15)",
+          boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
+        },
+      });
     }
   };
 
@@ -88,49 +106,49 @@ const Register = () => {
 			overflow-hidden"
     >
       <div className="p-8">
-        <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
+        <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-teal-400 to-sky-500 text-transparent bg-clip-text">
           Create Account
         </h2>
 
         <form onSubmit={handleSubmit}>
           <div className="relative mb-6">
             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <User className="size-5 text-green-500" />
+              <User className="size-5 text-teal-500" />
             </div>
             <input
               type="text"
               placeholder="Full Name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full pl-10 pr-3 py-2 bg-gray-800 bg-opacity-50 rounded-lg border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500 text-white placeholder-gray-400 transition duration-200"
+              className="w-full pl-10 pr-3 py-2 bg-gray-800 bg-opacity-50 rounded-lg border border-gray-700 focus:border-teal-500 focus:ring-2 focus:ring-teal-500 text-white placeholder-gray-400 transition duration-200"
               required
             />
           </div>
 
           <div className="relative mb-6">
             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <Mail className="size-5 text-green-500" />
+              <Mail className="size-5 text-teal-500" />
             </div>
             <input
               type="email"
               placeholder="Email Address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full pl-10 pr-3 py-2 bg-gray-800 bg-opacity-50 rounded-lg border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500 text-white placeholder-gray-400 transition duration-200"
+              className="w-full pl-10 pr-3 py-2 bg-gray-800 bg-opacity-50 rounded-lg border border-gray-700 focus:border-teal-500 focus:ring-2 focus:ring-teal-500 text-white placeholder-gray-400 transition duration-200"
               required
             />
           </div>
 
           <div className="relative mb-6">
             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <Lock className="size-5 text-green-500" />
+              <Lock className="size-5 text-teal-500" />
             </div>
             <input
               type="password"
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full pl-10 pr-3 py-2 bg-gray-800 bg-opacity-50 rounded-lg border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500 text-white placeholder-gray-400 transition duration-200"
+              className="w-full pl-10 pr-3 py-2 bg-gray-800 bg-opacity-50 rounded-lg border border-gray-700 focus:border-teal-500 focus:ring-2 focus:ring-teal-500 text-white placeholder-gray-400 transition duration-200"
               required
             />
           </div>
@@ -149,9 +167,9 @@ const Register = () => {
           <motion.button
             className={`mt-5 w-full py-3 px-4 ${
               isFormValid
-                ? "bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 cursor-pointer"
+                ? "bg-gradient-to-r from-teal-500 to-sky-600 hover:from-teal-600 hover:to-sky-700 cursor-pointer"
                 : "bg-gray-600 cursor-not-allowed"
-            } text-white font-bold rounded-lg shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2
+            } text-white font-bold rounded-lg shadow-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2
              focus:ring-offset-gray-900 transition duration-200`}
             whileHover={{ scale: isFormValid ? 1.02 : 1 }}
             whileTap={{ scale: isFormValid ? 0.98 : 1 }}
@@ -169,7 +187,7 @@ const Register = () => {
       <div className="px-8 py-4 bg-gray-900 bg-opacity-50 flex justify-center">
         <p className="text-sm text-gray-400">
           Already have an account?{" "}
-          <Link to={"/login"} className="text-green-400 hover:underline">
+          <Link to={"/login"} className="text-teal-400 hover:underline">
             Login
           </Link>
         </p>
