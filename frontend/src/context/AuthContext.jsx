@@ -12,6 +12,7 @@ export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingSpinner, setLoadingSpinner] = useState(false);
+  const [errors, setErrors] = useState(null);
 
   const checkAuth = async () => {
     axios.defaults.withCredentials = true;
@@ -28,6 +29,7 @@ export const AuthProvider = ({ children }) => {
       setLoadingSpinner(false);
       setAuthUser(null);
       setIsLoggedIn(false);
+      setErrors(e.response.data.message);
       return;
     }
   };
@@ -43,6 +45,8 @@ export const AuthProvider = ({ children }) => {
     setIsLoading,
     loadingSpinner,
     setLoadingSpinner,
+    errors,
+    setErrors,
   };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
