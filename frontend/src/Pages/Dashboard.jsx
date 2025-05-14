@@ -15,12 +15,30 @@ const Dashboard = () => {
       const { data } = await axios.post(`${BACKEND_URL}/logout`);
       if (data.success) {
         setIsLoggedIn(false);
-        toast.success(data.message);
+        toast.success(data.message, {
+          style: {
+            background: "rgba(32, 56, 70, 0.6)",
+            color: "#fff",
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)",
+            border: "1px solid rgba(255,255,255,0.15)",
+            boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
+          },
+        });
         setAuthUser(null);
         navigate("/login");
       }
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error.response.data.message, {
+        style: {
+          background: "rgba(32, 56, 70, 0.6)",
+          color: "#fff",
+          backdropFilter: "blur(8px)",
+          WebkitBackdropFilter: "blur(8px)",
+          border: "1px solid rgba(255,255,255,0.15)",
+          boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
+        },
+      });
     }
   };
   return (
@@ -33,7 +51,7 @@ const Dashboard = () => {
           transition={{ duration: 0.5 }}
           className="max-w-md w-full mx-auto mt-10 p-8 bg-gray-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-xl shadow-2xl border border-gray-800"
         >
-          <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-green-400 to-emerald-600 text-transparent bg-clip-text">
+          <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-teal-400 to-sky-600 text-transparent bg-clip-text">
             Dashboard
           </h2>
 
@@ -44,7 +62,7 @@ const Dashboard = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-              <h3 className="text-xl font-semibold text-green-400 mb-3">
+              <h3 className="text-xl font-semibold text-teal-400 mb-3">
                 Profile Information
               </h3>
               <p className="text-gray-300">Name: {authUser.name}</p>
@@ -56,7 +74,7 @@ const Dashboard = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
             >
-              <h3 className="text-xl font-semibold text-green-400 mb-3">
+              <h3 className="text-xl font-semibold text-teal-400 mb-3">
                 Account Activity
               </h3>
               <p className="text-gray-300">
@@ -85,9 +103,9 @@ const Dashboard = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={hadleLogout}
-              className="w-full py-3 px-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white 
-				font-bold rounded-lg shadow-lg hover:from-green-600 hover:to-emerald-700
-				 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-900 cursor-pointer"
+              className="w-full py-3 px-4 bg-gradient-to-r from-teal-500 to-sky-600 text-white 
+				font-bold rounded-lg shadow-lg hover:from-teal-600 hover:to-sky-700
+				 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 focus:ring-offset-gray-900 cursor-pointer"
             >
               Logout
             </motion.button>
