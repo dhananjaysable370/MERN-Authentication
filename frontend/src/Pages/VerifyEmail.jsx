@@ -148,7 +148,7 @@ const EmailVerify = () => {
         transition={{ duration: 0.5 }}
         className="p-8 w-full"
       >
-        <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
+        <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-teal-400 to-sky-500 text-transparent bg-clip-text">
           Verify Your Email
         </h2>
         <p className="text-center text-gray-300 mb-6">
@@ -173,7 +173,7 @@ const EmailVerify = () => {
                 onChange={(e) => handleChange(index, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(index, e)}
                 disabled={isSubmitting || isLoading}
-                className="w-12 h-12 text-center text-2xl font-bold bg-gray-700 text-white border-2 border-gray-600 rounded-lg focus:border-green-500 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-12 h-12 text-center text-2xl font-bold bg-gray-700 text-white border-2 border-gray-600 rounded-lg focus:border-teal-500 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
               />
             ))}
           </div>
@@ -183,7 +183,7 @@ const EmailVerify = () => {
             whileTap={{ scale: 0.95 }}
             type="submit"
             disabled={isLoading || isSubmitting || code.some((digit) => !digit)}
-            className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:from-green-600 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+            className="w-full bg-gradient-to-r from-teal-500 to-sky-600 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:from-teal-600 hover:to-sky-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-opacity-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
           >
             {isLoading || isSubmitting ? (
               <span className="flex items-center justify-center">
@@ -220,7 +220,7 @@ const EmailVerify = () => {
             type="button"
             onClick={handleResendOtp}
             disabled={resendDisabled}
-            className="text-zinc-300 hover:text-green-400 disabled:text-zinc-500 disabled:cursor-not-allowed transition-colors duration-200 text-sm"
+            className="text-zinc-300 hover:text-teal-400 disabled:text-zinc-500 disabled:cursor-not-allowed transition-colors duration-200 text-sm"
             aria-live="polite"
           >
             {resendDisabled
