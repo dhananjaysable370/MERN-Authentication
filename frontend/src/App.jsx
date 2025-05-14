@@ -25,12 +25,10 @@ const App = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-sky-900 to-teal-900 flex items-center justify-center relative overflow-hidden">
-        {/* App Logo - visible on all pages */}
-        <div className="absolute top-6 left-6 z-10">
-          <img src="logo.svg" alt="App Logo" className="h-12 w-auto" />
-        </div>
-
+      <div
+        className="min-h-screen bg-gradient-to-br
+    from-gray-900 via-sky-900 to-teal-900 flex items-center justify-center relative overflow-hidden"
+      >
         <FloatingShape
           color="bg-sky-500"
           size="w-64 h-64"
