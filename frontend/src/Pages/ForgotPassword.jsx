@@ -24,7 +24,16 @@ const ForgotPassword = () => {
         { headers: { "Content-Type": "application/json" } }
       );
       if (data.success) {
-        toast.success(data.message);
+        toast.success(data.message, {
+          style: {
+            background: "rgba(32, 56, 70, 0.6)",
+            color: "#fff",
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)",
+            border: "1px solid rgba(255,255,255,0.15)",
+            boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
+          },
+        });
         setIsSubmitted(true);
       }
     } catch (error) {
@@ -40,7 +49,7 @@ const ForgotPassword = () => {
       className="max-w-md w-full bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden"
     >
       <div className="p-8">
-        <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
+        <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-teal-400 to-sky-500 text-transparent bg-clip-text">
           Forgot Password
         </h2>
 
@@ -52,7 +61,7 @@ const ForgotPassword = () => {
             </p>
             <div className="relative mb-6">
               <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <Mail className="size-5 text-green-500" />
+                <Mail className="size-5 text-teal-500" />
               </div>
               <input
                 type="email"
@@ -60,13 +69,13 @@ const ForgotPassword = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 autoComplete="email"
-                className="w-full pl-10 pr-3 py-2 bg-gray-800 bg-opacity-50 rounded-lg border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500 text-white placeholder-gray-400 transition duration-200"
+                className="w-full pl-10 pr-3 py-2 bg-gray-800 bg-opacity-50 rounded-lg border border-gray-700 focus:border-teal-500 focus:ring-2 focus:ring-teal-500 text-white placeholder-gray-400 transition duration-200"
               />
             </div>
             <motion.button
               whileHover={{ scale: isEmailValid ? 1.02 : 1 }}
               whileTap={{ scale: isEmailValid ? 0.98 : 1 }}
-              className="w-full py-3 px-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-lg shadow-lg hover:from-green-600 cursor-pointer hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-3 px-4 bg-gradient-to-r from-teal-500 to-sky-600 text-white font-bold rounded-lg shadow-lg hover:from-teal-600 cursor-pointer hover:to-sky-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               type="submit"
               disabled={!isEmailValid || isLoading}
             >
@@ -83,7 +92,7 @@ const ForgotPassword = () => {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: "spring", stiffness: 500, damping: 30 }}
-              className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4"
+              className="w-16 h-16 bg-teal-500 rounded-full flex items-center justify-center mx-auto mb-4"
             >
               <Mail className="h-8 w-8 text-white" />
             </motion.div>
@@ -98,7 +107,7 @@ const ForgotPassword = () => {
       <div className="px-8 py-4 bg-gray-900 bg-opacity-50 flex justify-center">
         <Link
           to={"/login"}
-          className="text-sm text-green-400 hover:underline flex items-center"
+          className="text-sm text-teal-400 hover:underline flex items-center"
         >
           <ArrowLeft className="h-4 w-4 mr-2" /> Back to Login
         </Link>
