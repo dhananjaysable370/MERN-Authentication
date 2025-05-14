@@ -79,16 +79,29 @@ const Dashboard = () => {
               </h3>
               <p className="text-gray-300">
                 <span className="font-bold">Joined: </span>
-                {new Date(authUser.createdAt).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
+                {authUser.createdAt
+                  ? new Date(authUser.createdAt).toLocaleString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      second: "2-digit",
+                    })
+                  : "N/A"}
               </p>
               <p className="text-gray-300">
                 <span className="font-bold">Last Login: </span>
-
-                {authUser.lastLogin}
+                {authUser.lastLogin
+                  ? new Date(authUser.lastLogin).toLocaleString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      second: "2-digit",
+                    })
+                  : "N/A"}
               </p>
             </motion.div>
           </div>
