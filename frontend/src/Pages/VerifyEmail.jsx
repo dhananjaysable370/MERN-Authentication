@@ -225,7 +225,7 @@ const EmailVerify = () => {
           >
             {resendDisabled
               ? `Resend code in ${countdown}s`
-              : "Didn't receive code? <span className='cursor-pointer hover:text-teal-500'>Resend</span>"}
+              : <><p>"Didn't receive code? "</p><span className='cursor-pointer hover:text-teal-500'>Resend</span></>}
           </button>
 
           <p className="text-xs text-zinc-400 mt-2">
