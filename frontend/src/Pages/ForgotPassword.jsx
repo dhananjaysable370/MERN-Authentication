@@ -10,13 +10,14 @@ import axios from "axios";
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const { BACKEND_URL, isLoading } = useAuth();
+  const { BACKEND_URL, isLoading, setIsLoading } = useAuth();
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const isEmailValid = emailRegex.test(email);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       const { data } = await axios.post(
         `${BACKEND_URL}/forgot-password`,
@@ -37,16 +38,18 @@ const ForgotPassword = () => {
         setIsSubmitted(true);
       }
     } catch (error) {
-      toast.error(error?.response?.data?.message || "Something went wrong.",{
-          style: {
-            background: "rgba(32, 56, 70, 0.6)",
-            color: "#fff",
-            backdropFilter: "blur(8px)",
-            WebkitBackdropFilter: "blur(8px)",
-            border: "1px solid rgba(255,255,255,0.15)",
-            boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
-          },
-        });
+      toast.error(error?.response?.data?.message || "Something went wrong.", {
+        style: {
+          background: "rgba(32, 56, 70, 0.6)",
+          color: "#fff",
+          backdropFilter: "blur(8px)",
+          WebkitBackdropFilter: "blur(8px)",
+          border: "1px solid rgba(255,255,255,0.15)",
+          boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
+        },
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -89,7 +92,10 @@ const ForgotPassword = () => {
               disabled={!isEmailValid || isLoading}
             >
               {isLoading ? (
-                <Loader className="size-6 animate-spin mx-auto" />
+                <div className="flex items-center justify-center gap-2">
+                  <Loader className="size-5 animate-spin" />
+                  <span>Sending...</span>
+                </div>
               ) : (
                 "Send Reset Link"
               )}
@@ -124,4 +130,5 @@ const ForgotPassword = () => {
     </motion.div>
   );
 };
+
 export default ForgotPassword;
