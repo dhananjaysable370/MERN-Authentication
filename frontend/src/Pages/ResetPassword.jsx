@@ -33,8 +33,24 @@ const ResetPassword = () => {
   }, [password]);
 
   const handleSubmit = async (e) => {
-    setIsLoading(true);
     e.preventDefault();
+    
+    // Return early if password is not strong enough
+    if (!isPasswordStrong) {
+      toast.error("Please create a stronger password to continue", {
+        style: {
+          background: "rgba(32, 56, 70, 0.6)",
+          color: "#fff",
+          backdropFilter: "blur(8px)",
+          WebkitBackdropFilter: "blur(8px)",
+          border: "1px solid rgba(255,255,255,0.15)",
+          boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
+        },
+      });
+      return;
+    }
+    
+    setIsLoading(true);
     try {
       const { data } = await axios.post(
         `${BACKEND_URL}/reset-password/${token}`,
@@ -63,16 +79,16 @@ const ResetPassword = () => {
       }, 2000);
     } catch (error) {
       setIsLoading(false);
-      toast.error(error?.response?.data?.message || "Error resetting password",{
-          style: {
-            background: "rgba(32, 56, 70, 0.6)",
-            color: "#fff",
-            backdropFilter: "blur(8px)",
-            WebkitBackdropFilter: "blur(8px)",
-            border: "1px solid rgba(255,255,255,0.15)",
-            boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
-          },
-        });
+      toast.error(error?.response?.data?.message || "Error resetting password", {
+        style: {
+          background: "rgba(32, 56, 70, 0.6)",
+          color: "#fff",
+          backdropFilter: "blur(8px)",
+          WebkitBackdropFilter: "blur(8px)",
+          border: "1px solid rgba(255,255,255,0.15)",
+          boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
+        },
+      });
     }
   };
 
@@ -95,7 +111,7 @@ const ResetPassword = () => {
             </div>
             <input
               type="password"
-              placeholder="Password"
+              placeholder="New Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full pl-10 pr-3 py-2 bg-gray-800 bg-opacity-50 rounded-lg border border-gray-700 focus:border-teal-500 focus:ring-2 focus:ring-teal-500 text-white placeholder-gray-400 transition duration-200"
@@ -109,20 +125,27 @@ const ResetPassword = () => {
 
           {!isPasswordStrong && password.length > 0 && (
             <p className="text-yellow-500 text-sm mt-2">
-              Please create a stronger password to continue
+              Password must meet at least 3 of these criteria:
+              <ul className="list-disc pl-5 mt-1">
+                <li>At least 8 characters</li>
+                <li>Contain uppercase letters</li>
+                <li>Contain numbers</li>
+                <li>Contain special characters</li>
+              </ul>
             </p>
           )}
+          
           <motion.button
             whileHover={{ scale: isPasswordStrong ? 1.02 : 1 }}
             whileTap={{ scale: isPasswordStrong ? 0.98 : 1 }}
             className="w-full mt-4 py-3 px-4 bg-gradient-to-r from-teal-500 to-sky-600 text-white font-bold rounded-lg shadow-lg hover:from-teal-600 hover:to-sky-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             type="submit"
-            disabled={isLoading || !isPasswordStrong}
+            disabled={!isPasswordStrong || isLoading}
           >
             {isLoading ? (
               <div className="flex justify-center items-center gap-2">
-                <Loader className="animate-spin " />
-                <p>Updating...</p>
+                <Loader className="size-5 animate-spin" />
+                <span>Updating...</span>
               </div>
             ) : (
               "Update Password"
@@ -133,4 +156,5 @@ const ResetPassword = () => {
     </motion.div>
   );
 };
+
 export default ResetPassword;
