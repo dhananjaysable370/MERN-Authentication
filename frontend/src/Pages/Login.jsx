@@ -67,7 +67,16 @@ const Login = () => {
       const msg =
         error.response?.data?.message ||
         "Something went wrong. Please try again.";
-      toast.error(msg);
+      toast.error(msg,{
+          style: {
+            background: "rgba(32, 56, 70, 0.6)",
+            color: "#fff",
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)",
+            border: "1px solid rgba(255,255,255,0.15)",
+            boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
+          },
+        });
     } finally {
       setIsLoading(false);
     }
