@@ -15,24 +15,31 @@ export const AuthProvider = ({ children }) => {
   const [errors, setErrors] = useState(null);
 
   const checkAuth = async () => {
-    axios.defaults.withCredentials = true;
-    setLoadingSpinner(true);
-    try {
-      axios.defaults.withCredentials = true;
-      const { data } = await axios.get(`${BACKEND_URL}/check-auth`);
-      if (data.success) {
-        setAuthUser(data.user);
-        setIsLoggedIn(true);
-      }
-      setLoadingSpinner(false);
-    } catch (e) {
-      setLoadingSpinner(false);
-      setAuthUser(null);
-      setIsLoggedIn(false);
-      setErrors(e.response.data.message);
-      return;
+  axios.defaults.withCredentials = true;
+  setLoadingSpinner(true);
+  
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    
+    const { data } = await axios.get(`${BACKEND_URL}/check-auth`, {
+      signal: controller.signal
+    });
+    
+    clearTimeout(timeoutId);
+    
+    if (data.success) {
+      setAuthUser(data.user);
+      setIsLoggedIn(true);
     }
-  };
+  } catch (e) {
+    setAuthUser(null);
+    setIsLoggedIn(false);
+    setErrors(e?.response?.data?.message || "Authentication check timed out");
+  } finally {
+    setLoadingSpinner(false);
+  }
+};
 
   const value = {
     BACKEND_URL,
