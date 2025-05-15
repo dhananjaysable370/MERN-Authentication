@@ -220,12 +220,12 @@ const EmailVerify = () => {
             type="button"
             onClick={handleResendOtp}
             disabled={resendDisabled}
-            className="text-zinc-300 hover:text-teal-400 disabled:text-zinc-500 disabled:cursor-not-allowed transition-colors duration-200 text-sm"
+            className="text-zinc-300 disabled:text-zinc-500 disabled:cursor-not-allowed transition-colors duration-200 text-sm"
             aria-live="polite"
           >
             {resendDisabled
               ? `Resend code in ${countdown}s`
-              : <div className="flex items-center justify-center"><p>Didn't receive code? </p><span className='cursor-pointer hover:text-teal-500'>Resend</span></div>}
+              : <div className="flex items-center justify-center gap-2"><p>Didn't receive code? </p><span className='cursor-pointer hover:text-teal-500'>Resend</span></div>}
           </button>
 
           <p className="text-xs text-zinc-400 mt-2">
