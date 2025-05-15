@@ -35,7 +35,6 @@ const ResetPassword = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Return early if password is not strong enough
     if (!isPasswordStrong) {
       toast.error("Please create a stronger password to continue", {
         style: {
