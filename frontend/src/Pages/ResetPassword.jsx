@@ -124,13 +124,7 @@ const ResetPassword = () => {
 
           {!isPasswordStrong && password.length > 0 && (
             <p className="text-yellow-500 text-sm mt-2">
-              Password must meet at least 3 of these criteria:
-              <ul className="list-disc pl-5 mt-1">
-                <li>At least 8 characters</li>
-                <li>Contain uppercase letters</li>
-                <li>Contain numbers</li>
-                <li>Contain special characters</li>
-              </ul>
+             Password must be strong to proceed with the update.
             </p>
           )}
           
