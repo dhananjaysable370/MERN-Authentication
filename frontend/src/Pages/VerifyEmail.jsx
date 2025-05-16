@@ -228,7 +228,7 @@ const EmailVerify = () => {
           </button>
 
           <p className="text-xs text-zinc-400 mt-2">
-            Having trouble? Contact support at dhananjaysable370@gmail.com
+            Having trouble? Contact support at mern.auth.dev@gmail.com
           </p>
         </div>
       </motion.div>
