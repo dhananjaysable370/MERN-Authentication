@@ -10,7 +10,7 @@ import PasswordStrengthMeter from "../components/PasswordStrengthMeter";
 
 const ResetPassword = () => {
   const [password, setPassword] = useState("");
-  const { BACKEND_URL, isLoading, setIsLoading } = useAuth();
+  const { BACKEND_URL, isLoading, setIsLoading,toastStyle } = useAuth();
   const [passwordStrength, setPasswordStrength] = useState(0);
   const [isPasswordStrong, setIsPasswordStrong] = useState(false);
 
@@ -36,16 +36,7 @@ const ResetPassword = () => {
     e.preventDefault();
     
     if (!isPasswordStrong) {
-      toast.error("Please create a stronger password to continue", {
-        style: {
-          background: "rgba(32, 56, 70, 0.6)",
-          color: "#fff",
-          backdropFilter: "blur(8px)",
-          WebkitBackdropFilter: "blur(8px)",
-          border: "1px solid rgba(255,255,255,0.15)",
-          boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
-        },
-      });
+      toast.error("Please create a stronger password to continue",toastStyle);
       return;
     }
     
@@ -61,16 +52,7 @@ const ResetPassword = () => {
         }
       );
       if (data.success) {
-        toast.success(data.message, {
-          style: {
-            background: "rgba(32, 56, 70, 0.6)",
-            color: "#fff",
-            backdropFilter: "blur(8px)",
-            WebkitBackdropFilter: "blur(8px)",
-            border: "1px solid rgba(255,255,255,0.15)",
-            boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
-          },
-        });
+        toast.success(data.message, toastStyle);
       }
       setTimeout(() => {
         setIsLoading(false);
@@ -78,16 +60,7 @@ const ResetPassword = () => {
       }, 2000);
     } catch (error) {
       setIsLoading(false);
-      toast.error(error?.response?.data?.message || "Error resetting password", {
-        style: {
-          background: "rgba(32, 56, 70, 0.6)",
-          color: "#fff",
-          backdropFilter: "blur(8px)",
-          WebkitBackdropFilter: "blur(8px)",
-          border: "1px solid rgba(255,255,255,0.15)",
-          boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
-        },
-      });
+      toast.error(error?.response?.data?.message || "Error resetting password",toastStyle);
     }
   };
 
