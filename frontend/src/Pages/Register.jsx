@@ -9,7 +9,7 @@ import { motion } from "framer-motion";
 import PasswordStrengthMeter from "../components/PasswordStrengthMeter";
 
 const Register = () => {
-  const { BACKEND_URL, setAuthUser, isLoading, isLoggedIn } = useAuth();
+  const { BACKEND_URL, setAuthUser, isLoading, isLoggedIn ,toastStyle} = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -53,16 +53,7 @@ const Register = () => {
       );
 
       if (data.success) {
-        toast.success(data.message, {
-          style: {
-            background: "rgba(32, 56, 70, 0.6)",
-            color: "#fff",
-            backdropFilter: "blur(8px)",
-            WebkitBackdropFilter: "blur(8px)",
-            border: "1px solid rgba(255,255,255,0.15)",
-            boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
-          },
-        });
+        toast.success(data.message,toastStyle);
         const isVerified = data?.user?.isVerified ?? false;
 
         if (isVerified) {
@@ -76,16 +67,7 @@ const Register = () => {
     } catch (error) {
       const message =
         error?.response?.data?.message || "Registration failed. Try again.";
-      toast.error(message, {
-        style: {
-          background: "rgba(32, 56, 70, 0.6)",
-          color: "#fff",
-          backdropFilter: "blur(8px)",
-          WebkitBackdropFilter: "blur(8px)",
-          border: "1px solid rgba(255,255,255,0.15)",
-          boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
-        },
-      });
+      toast.error(message, toastStyle);
     }
   };
 
