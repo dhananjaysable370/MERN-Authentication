@@ -10,7 +10,7 @@ import axios from "axios";
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const { BACKEND_URL, isLoading, setIsLoading } = useAuth();
+  const { BACKEND_URL, isLoading, setIsLoading ,toastStyle} = useAuth();
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const isEmailValid = emailRegex.test(email);
@@ -25,29 +25,11 @@ const ForgotPassword = () => {
         { headers: { "Content-Type": "application/json" } }
       );
       if (data.success) {
-        toast.success(data.message, {
-          style: {
-            background: "rgba(32, 56, 70, 0.6)",
-            color: "#fff",
-            backdropFilter: "blur(8px)",
-            WebkitBackdropFilter: "blur(8px)",
-            border: "1px solid rgba(255,255,255,0.15)",
-            boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
-          },
-        });
+        toast.success(data.message,toastStyle);
         setIsSubmitted(true);
       }
     } catch (error) {
-      toast.error(error?.response?.data?.message || "Something went wrong.", {
-        style: {
-          background: "rgba(32, 56, 70, 0.6)",
-          color: "#fff",
-          backdropFilter: "blur(8px)",
-          WebkitBackdropFilter: "blur(8px)",
-          border: "1px solid rgba(255,255,255,0.15)",
-          boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
-        },
-      });
+      toast.error(error?.response?.data?.message || "Something went wrong.", toastStyle);
     } finally {
       setIsLoading(false);
     }
