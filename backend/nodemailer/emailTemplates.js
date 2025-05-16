@@ -19,7 +19,10 @@ export const VERIFICATION_EMAIL_TEMPLATE = `
     <p>Enter this code on the verification page to complete your registration.</p>
     <p>This code will expire in 15 minutes for security reasons.</p>
     <p>If you didn't create an account with us, please ignore this email.</p>
-    <p>Best regards,<br>MERN-Auth</p>
+    <p>Best regards,<br>
+MERN-Auth<br>
+<a href="mailto:mern.auth.dev@gmail.com">mern.auth.dev@gmail.com</a>
+</p>
   </div>
   <div style="text-align: center; margin-top: 20px; color: #888; font-size: 0.8em;">
     <p>This is an automated message, please do not reply to this email.</p>
