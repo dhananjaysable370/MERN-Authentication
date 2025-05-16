@@ -280,7 +280,7 @@ export const WELCOME_EMAIL_TEMPLATE = `
                     <div class="hero">
                         <h1>Welcome to Our Platform!</h1>
                         <p>Thank you for verifying your email address. We're excited to have you join our community.</p>
-                        <a href="http://localhost:5173/login" class="button">Get Started</a>
+                        <a href="https://mern-auth-2b3j.onrender.com/login" class="button">Get Started</a>
                     </div>
 
                     <p>Hello [Customer Name],</p>
