@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
 const Dashboard = () => {
-  const { isLoggedIn, setIsLoggedIn, setAuthUser, authUser } = useAuth();
+  const { isLoggedIn, setIsLoggedIn, setAuthUser, authUser,toastStyle } = useAuth();
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
   const navigate = useNavigate();
   const hadleLogout = async () => {
@@ -15,30 +15,12 @@ const Dashboard = () => {
       const { data } = await axios.post(`${BACKEND_URL}/logout`);
       if (data.success) {
         setIsLoggedIn(false);
-        toast.success(data.message, {
-          style: {
-            background: "rgba(32, 56, 70, 0.6)",
-            color: "#fff",
-            backdropFilter: "blur(8px)",
-            WebkitBackdropFilter: "blur(8px)",
-            border: "1px solid rgba(255,255,255,0.15)",
-            boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
-          },
-        });
+        toast.success(data.message, toastStyle);
         setAuthUser(null);
         navigate("/login");
       }
     } catch (error) {
-      toast.error(error.response.data.message, {
-        style: {
-          background: "rgba(32, 56, 70, 0.6)",
-          color: "#fff",
-          backdropFilter: "blur(8px)",
-          WebkitBackdropFilter: "blur(8px)",
-          border: "1px solid rgba(255,255,255,0.15)",
-          boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
-        },
-      });
+      toast.error(error.response.data.message,toastStyle);
     }
   };
   return (
